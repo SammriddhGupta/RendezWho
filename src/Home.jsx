@@ -8,12 +8,51 @@ import "react-day-picker/dist/style.css";
 function Home() {
   const [eventName, setEventName] = useState("");
   const [selectedRange, setSelectedRange] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // Initialize the navigate function
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     // You can show the alert here if needed before navigating, or just navigate
-    alert(`Event "${eventName}" Created!`);
-    navigate("/event"); // Navigate to the "/event" page
+
+    if (!eventName || !selectedRange || !selectedRange.from || !selectedRange.to) {
+      alert("Please enter an event name and select a valid date range.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Build the event data payload
+      const eventData = {
+        name: eventName,
+        eventType: "date_range", // For a date range event. Use "fixed_days" if appropriate.
+        startDate: selectedRange.from.toISOString(), // Convert dates to ISO format
+        endDate: selectedRange.to.toISOString(),
+        days: null, // Not used for date_range events
+        startTime: "09:00", // Hard-coded time range for now
+        endTime: "17:00",
+      };
+
+      // Send a POST request to your backend API
+      const response = await fetch("http://localhost:5001/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(eventData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create event");
+      }
+
+      const data = await response.json();
+      console.log("Event created:", data);
+      // Navigate to the event page using the unique link returned by the backend
+      navigate(`/event/${data.uniqueLink}`);
+    } catch (error) {
+      console.error("Error creating event:", error);
+      alert("Error creating event. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle date range selection
@@ -51,6 +90,7 @@ function Home() {
             />
 
             <h1>Select a time range</h1>
+            
       
             </div>
 

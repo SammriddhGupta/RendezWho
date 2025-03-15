@@ -1,80 +1,57 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "./Day.css";
 
-function Day({ height }) {
-  const [hours, setHours] = useState(Array(48).fill(false));
-
+function Day({ hours, date, toggleSlot }) {
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [mouseState, setMouseState] = useState(false);
 
   const handleMouseDown = (index) => {
-    // Update the hours state, setting the clicked index to true
-
+    // Set initial state when mouse button is pressed
     if (hours[index] === true) {
       setIsMouseDown(true);
-
       setMouseState(false);
-      setHours(
-        (prevHours) => prevHours.map((item, i) => (i === index ? false : item)) // Set specific index to false
-      );
-      //   console.log("Mouse is pressed down on index:", index);
+      toggleSlot(date, index); // Toggle the state by passing date and index
     } else {
       setIsMouseDown(true);
       setMouseState(true);
-
-      setHours(
-        (prevHours) => prevHours.map((item, i) => (i === index ? true : item)) // Set specific index to true
-      );
+      toggleSlot(date, index); // Toggle the state by passing date and index
     }
-
-    // console.log(`Mouse down on index ${index}`);
   };
 
-  const handleMouseUp = (index) => {
-    setIsMouseDown(false); // Set to false when mouse is releases
-
-    console.log("Mouse is released");
+  const handleMouseUp = () => {
+    setIsMouseDown(false); // Set to false when mouse is released
   };
 
   const handleMouseEnter = (index) => {
     if (isMouseDown) {
+      // Update the state based on whether the mouse is down
       if (mouseState === true) {
-        setHours(
-          (prevHours) => prevHours.map((item, i) => (i === index ? true : item)) // Set specific index to true
-        );
+        toggleSlot(date, index); // Toggle the state to true
       } else if (mouseState === false) {
-        setHours(
-          (prevHours) =>
-            prevHours.map((item, i) => (i === index ? false : item)) // Set specific index to false
-        );
+        toggleSlot(date, index); // Toggle the state to false
       }
-
-      //   console.log(index);
     }
   };
 
   return (
-    <div class="day-container">
+    <div className="day-container">
       {hours.map((hour, index) => (
         <div
+          key={index}
           onMouseDown={() => handleMouseDown(index)}
-          onMouseUp={() => handleMouseUp(index)}
+          onMouseUp={handleMouseUp}
           onMouseEnter={() => handleMouseEnter(index)}
           className="day-child"
-          key={index}
-          //   onClick={() => toggleHour(index)}
           style={{
             cursor: "pointer",
-            backgroundColor: hour ? "green" : "gray",
+            backgroundColor: hour ? "green" : "gray", // Toggle color based on slot value
             color: "black",
-            // borderRadius: "5px",
-            // border: "1px solid black",
-            height: "15px",
-            width: "60px",
-            fontSize: "10px",
+            height: "20px",
+            width: "70px",
+            fontSize: "9px",
           }}
         >
-          <div>{hour ? "True" : "False"}</div>
+          {/* <div>{hour ? "True" : "False"}</div> */}
         </div>
       ))}
     </div>

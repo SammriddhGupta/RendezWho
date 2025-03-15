@@ -23,7 +23,6 @@ export default function VotingBar({ options = [], eventId }) {
     } catch(error) {
       console.error('Error voting:', error);
     }
-    
   };
 
 

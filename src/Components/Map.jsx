@@ -14,6 +14,7 @@ import SearchBar from "./SearchBar";
 const MapComponent = ({ onLocationSelect }) => {
 
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [markerPosition, setMarkerPosition] = useState(null);
 
   const markerIcon = new L.Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
@@ -30,7 +31,7 @@ const MapComponent = ({ onLocationSelect }) => {
 
   const searchEventHandler = (result) => {
     // Extract bounds, name, x, y
-    const bounds = [result.location.bounds[0], result.location.bounds[1]];
+    const bounds = result.location.bounds;
     const locationData = {
       name: result.location.label,
       x: result.location.x,
@@ -38,6 +39,7 @@ const MapComponent = ({ onLocationSelect }) => {
       bounds: bounds,
     };
     setSelectedLocation(locationData);
+    setMarkerPosition([result.location.y, result.location.x]);
     // You can also call a prop callback to notify the parent:
     if (onLocationSelect) {
       onLocationSelect(locationData);
@@ -46,48 +48,61 @@ const MapComponent = ({ onLocationSelect }) => {
 
 
   return (
-    <MapContainer
-      center={[-33.9173, 151.2313]}
-      zoom={13}
-      className="w-full h-full"
-    >
-      <SearchBar onResultSelect={searchEventHandler} />
-      <TileLayer
-        //differnt tile layers can be used here, e.g.,:
-        //most common openstreetmap tiles
-        // url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-
-        // High resolution black and white map
-        // url="https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png"
-
-        // toner but lighter version
-        // url="https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png"
-
-        // also commom but prettier map
-        // url="https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png"
-
-        // water color map omg this is pretty cool
-        url="https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg"
-        attribution='&copy; <a href="https://stamen.com">Stamen Design</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      />
-      
-      <TileLayer url="https://tiles.stadiamaps.com/tiles/stamen_toner_labels/{z}/{x}/{y}{r}.png" />
-      
-      <TileLayer url="https://tiles.stadiamaps.com/tiles/stamen_toner_lines/{z}/{x}/{y}{r}.png" opacity={0.1} />
-
-      <Marker position={[51.505, -0.09]} icon={markerIcon}>
-        <Popup>Hello, this is a custom marker!</Popup>
-      </Marker>
-
-      {/* <Circle
+    <div className="w-full h-96">
+      <MapContainer
         center={[-33.9173, 151.2313]}
-        radius={500}
-        color="red"
-        fillColor="pink"
-      /> */}
+        zoom={13}
+        className="w-full h-full"
+      >
+        <SearchBar onResultSelect={searchEventHandler} />
+        <TileLayer
+          //differnt tile layers can be used here, e.g.,:
+          //most common openstreetmap tiles
+          // url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
-      <Polygon positions={polygon} color="blue" />
-    </MapContainer>
+          // High resolution black and white map
+          // url="https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png"
+
+          // toner but lighter version
+          // url="https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png"
+
+          // also commom but prettier map
+          // url="https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png"
+
+          // water color map omg this is pretty cool
+          url="https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg"
+          attribution='&copy; <a href="https://stamen.com">Stamen Design</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        />
+        
+        <TileLayer url="https://tiles.stadiamaps.com/tiles/stamen_toner_labels/{z}/{x}/{y}{r}.png" />
+        
+        <TileLayer url="https://tiles.stadiamaps.com/tiles/stamen_toner_lines/{z}/{x}/{y}{r}.png" opacity={0.1} />
+
+        <Marker position={[51.505, -0.09]} icon={markerIcon}>
+          <Popup>Hello, this is a custom marker!</Popup>
+        </Marker>
+
+        {markerPosition && (
+            <Marker position={markerPosition} icon={markerIcon}>
+              <Popup>{selectedLocation?.name || "Selected location"}</Popup>
+            </Marker>
+          )}
+
+        {/* <Circle
+          center={[-33.9173, 151.2313]}
+          radius={500}
+          color="red"
+          fillColor="pink"
+        /> */}
+
+        <Polygon positions={polygon} color="blue" />
+      </MapContainer>
+      {selectedLocation && (
+        <div className="mt-2 p-2 bg-purple-100 rounded text-center">
+          <p className="font-medium">Selected: {selectedLocation.name}</p>
+        </div>
+      )}
+    </div>
   );
 }
 

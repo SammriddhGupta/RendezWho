@@ -9,11 +9,8 @@ import NameBox from "./Components/NameBox.jsx";
 
 function Event() {
   const [name, setName] = useState(["Alice", "Bob", "Charlie"]);
-
-  //backend for fetching name data goes here
-
-  ////////////////
-
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [pollOptions, setPollOptions] = useState([]);
   const { uniqueLink } = useParams();
   const [eventData, setEventData] = useState(null);
 
@@ -28,6 +25,9 @@ function Event() {
         }
         const data = await response.json();
         setEventData(data);
+        if (data.pollOptions) {
+          setPollOptions(data.pollOptions);
+        }
         console.log(`Data for the ${data.name} event is`, data);
       } catch (error) {
         console.error("Error fetching event:", error);
@@ -35,6 +35,17 @@ function Event() {
     };
     fetchEvent();
   }, [uniqueLink]);
+
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location);
+  };
+
+  const handleOptionAdded = (addedOption) => {
+    // Update the local state with the new option
+    setPollOptions(prevOptions => [...prevOptions, { ...addedOption, votes: 0 }]);
+    // Clear the selected location
+    setSelectedLocation(null);
+  };
 
   return (
     <>
@@ -65,9 +76,13 @@ function Event() {
         </div>
 
         <div className="flex flex-col items-center justify-center w-full md:w-2/3 gap-4">
-          <Map />
-          <AddPollOption />
-          <VotingBar />
+          <Map onLocationSelect={handleLocationSelect} />
+          <AddPollOption 
+            eventId={uniqueLink} 
+            selectedLocation={selectedLocation} 
+            onOptionAdded={handleOptionAdded} 
+          />
+          <VotingBar options={pollOptions} eventId={uniqueLink} />
         </div>
       </div>
     </>

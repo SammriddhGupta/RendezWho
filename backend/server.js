@@ -64,31 +64,39 @@ app.get('/api/events', async (req, res) => {
 
 app.post('/api/events/:id/poll-options', async (req, res) => {
   try {
-    const { name, x, y, bounds } = req.body; // e.g., "Macquarie Ice Skating Sydney"
-    if (!name || x === undefined || y === undefined || !bounds || !Array.isArray(bounds)) {
-      return res.status(400).json({ error: "Incomplete poll option data" });
+    const { optionIndex } = req.body;
+    if (optionIndex === undefined) {
+      return res.status(400).json({ error: "Option index is required" });
     }
 
     const eventRef = doc(db, 'events', req.params.id);
+    const eventSnap = await getDoc(eventRef);
+    
+    if (!eventSnap.exists()) {
+      return res.status(404).json({ error: "Event not found" });
+    }
 
-    const pollOption = {
-      name,       // location label
-      x,          // x-coordinate
-      y,          // y-coordinate
-      bounds,     // array of bounds coordinates
-      votes: 0,   // initial vote count
-      addedAt: serverTimestamp()
+    const eventData = eventSnap.data();
+    const pollOptions = eventData.pollOptions || [];
+
+    if (optionIndex < 0 || optionIndex >= pollOptions.length) {
+      return res.status(400).json({ error: "Invalid option index" });
+    }
+
+    // Create a new array with the updated vote count
+    const updatedPollOptions = [...pollOptions];
+    updatedPollOptions[optionIndex] = {
+      ...updatedPollOptions[optionIndex],
+      votes: (updatedPollOptions[optionIndex].votes || 0) + 1
     };
 
-    // Update the event document by adding the new poll option using arrayUnion
-    await updateDoc(eventRef, {
-      pollOptions: arrayUnion(pollOption)
-    });
+    // Update the document with the new poll options array
+    await updateDoc(eventRef, { pollOptions: updatedPollOptions });
 
-    res.status(201).json({ message: "Poll option added successfully" });
+    res.status(200).json({ message: "Vote recorded successfully" });
   } catch (error) {
-    console.error('Error adding poll option:', error);
-    res.status(500).json({ error: "Error adding poll option" });
+    console.error('Error recording vote:', error);
+    res.status(500).json({ error: "Error recording vote" });
   }
 });
 

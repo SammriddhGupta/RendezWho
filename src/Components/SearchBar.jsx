@@ -1,23 +1,53 @@
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import { useMap } from "react-leaflet";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import "leaflet-geosearch/assets/css/leaflet.css";
 
 const SearchBar = ({ onResultSelect }) => {
+  const provider = useMemo(() => new OpenStreetMapProvider(), []);
+  const controlRef = useRef(null);
 
   const searchControl = useMemo(
     () =>
       new GeoSearchControl({
-        provider: new OpenStreetMapProvider(),
+        provider: provider,
         style: "bar",
+        showMarker: true,
+        showPopup: false,
+        autoClose: true,
+        retainZoomLevel: false,
+        animateZoom: true,
+        keepResult: true,
+        searchLabel: "Search for locations",
         resetButton: "🔍",
       }),
-    []
+    [provider]
   );
 
   const map = useMap();
 
   useEffect(() => {
+    map.addControl(searchControl);
+    controlRef.current = searchControl;
+
+    const handleResults = (e) => {
+      if (onResultSelect && e.info === 'resultselected' && e.location) {
+        onResultSelect({
+          location: {
+            label: e.location.label,
+            x: e.location.x,
+            y: e.location.y,
+            bounds: [
+              [e.location.bounds.getSouth(), e.location.bounds.getWest()],
+              [e.location.bounds.getNorth(), e.location.bounds.getEast()]
+            ]
+          }
+        });
+      }
+    };
+
+    map.on('geosearch/showlocation', handleResults);
+    
     // If an onResultSelect callback is provided, add an event listener
     if (onResultSelect) {
       searchControl.getContainer().addEventListener("results", (event) => {
@@ -29,16 +59,12 @@ const SearchBar = ({ onResultSelect }) => {
       });
     }
 
-    map.addControl(searchControl);
-
     // Cleanup on unmount: remove the control and event listener
     return () => {
       map.removeControl(searchControl);
-      if (onResultSelect) {
-        searchControl.getContainer().removeEventListener("results");
-      }
+      map.off('geosearch/showlocation', handleResults);
     };
-  }, [map, onResultSelect, searchControl]);
+  }, [map, searchControl, onResultSelect]);
 
   return null;
 }

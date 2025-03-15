@@ -28,18 +28,10 @@ function Event() {
     fetchEventData();
   }, []);
 
-
   const handleLocationSelect = (location) => {
     console.log("Location selected in Event:", location);
     setSelectedLocation(location);
   };
-
-  /* const handleOptionAdded = (addedOption) => {
-    // Update the local state with the new option
-    setPollOptions(prevOptions => [...prevOptions, { ...addedOption, votes: 0 }]);
-    // Clear the selected location
-    setSelectedLocation(null);
-  }; */
 
   return (
     <div className='flex flex-col w-full gap-5'>

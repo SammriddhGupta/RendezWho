@@ -7,7 +7,7 @@ const SearchBar = () => {
   const searchControl = new GeoSearchControl({
     provider: new OpenStreetMapProvider(),
     style: 'bar',
-    resetButton: '🔍', // Example of using a magnifying glass icon
+    resetButton: '🔍',
   });
 
   const map = useMap();

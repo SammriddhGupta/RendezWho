@@ -54,7 +54,7 @@ function Day({ height }) {
   };
 
   return (
-    <div class="day-container">
+    <div className="day-container">
       {hours.map((hour, index) => (
         <div
           onMouseDown={() => handleMouseDown(index)}

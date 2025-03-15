@@ -10,7 +10,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import SearchBar from "./SearchBar";
 
-export default function MapComponent() {
+const MapComponent = () => {
   const markerIcon = new L.Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
     iconSize: [32, 32],
@@ -28,7 +28,7 @@ export default function MapComponent() {
     <MapContainer
       center={[-33.9173, 151.2313]}
       zoom={13}
-      style={{ height: "500px", width: "100%" }}
+      style={{ height: "50vh", width: "50%", borderRadius: "50px" }}
     >
       <SearchBar />
       <TileLayer
@@ -69,3 +69,5 @@ export default function MapComponent() {
     </MapContainer>
   );
 }
+
+export default MapComponent;

@@ -39,26 +39,13 @@ const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
   };
 
   return (
-    <div className="mt-4 text-center w-full md:w-1/2">
-      {selectedLocation ? (
-        <div className="p-4 bg-white border-2 border-gray-200 rounded-xl">
-          <p className="text-lg text-gray-700">
-            Selected Location: <strong>{selectedLocation.name}</strong>
-          </p>
-          <button
-            onClick={addOptionToPoll}
-            className="mt-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-            disabled={loading}
-          >
-            {loading ? "Adding..." : "Add to Poll"}
-          </button>
-        </div>
-      ) : (
-        <div className="p-4 bg-white border-2 border-gray-200 rounded-xl">
-          <p className="text-gray-500">Search for a location on the map to add it to the poll</p>
-        </div>
-      )}
-    </div>
+    <button
+      onClick={addOptionToPoll}
+      className="mt-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+      disabled={loading}
+    >
+      {loading ? "Adding..." : "Add to Poll"}
+    </button>
   );
 };
 

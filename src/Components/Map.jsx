@@ -30,17 +30,18 @@ const MapComponent = ({ onLocationSelect }) => {
   ];
 
   const searchEventHandler = (result) => {
+    console.log("Search result:", result);
     // Extract bounds, name, x, y
-    const bounds = result.location.bounds;
     const locationData = {
       name: result.location.label,
       x: result.location.x,
       y: result.location.y,
-      bounds: bounds,
+      bounds: result.location.bounds,
     };
     setSelectedLocation(locationData);
     setMarkerPosition([result.location.y, result.location.x]);
-    // You can also call a prop callback to notify the parent:
+
+    // Notify parent component
     if (onLocationSelect) {
       onLocationSelect(locationData);
     }
@@ -78,9 +79,9 @@ const MapComponent = ({ onLocationSelect }) => {
         
         <TileLayer url="https://tiles.stadiamaps.com/tiles/stamen_toner_lines/{z}/{x}/{y}{r}.png" opacity={0.1} />
 
-        <Marker position={[51.505, -0.09]} icon={markerIcon}>
+        {/* <Marker position={[51.505, -0.09]} icon={markerIcon}>
           <Popup>Hello, this is a custom marker!</Popup>
-        </Marker>
+        </Marker> */}
 
         {markerPosition && (
             <Marker position={markerPosition} icon={markerIcon}>
@@ -97,11 +98,11 @@ const MapComponent = ({ onLocationSelect }) => {
 
         <Polygon positions={polygon} color="blue" />
       </MapContainer>
-      {selectedLocation && (
+      {/* {selectedLocation && (
         <div className="mt-2 p-2 bg-purple-100 rounded text-center">
           <p className="font-medium">Selected: {selectedLocation.name}</p>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

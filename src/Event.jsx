@@ -10,42 +10,36 @@ import NameBox from "./Components/NameBox.jsx";
 function Event() {
   const [name, setName] = useState(["Alice", "Bob", "Charlie"]);
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const [pollOptions, setPollOptions] = useState([]);
+  // const [pollOptions, setPollOptions] = useState([]);
   const { uniqueLink } = useParams();
   const [eventData, setEventData] = useState(null);
 
+  const fetchEventData = async () => {
+    try {
+      const response = await fetch(`http://localhost:5001/api/events/${uniqueLink}`);
+      const data = await response.json();
+      setEventData(data);
+    } catch (error) {
+      console.error("Error fetching event:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5001/api/events/${uniqueLink}`
-        );
-        if (!response.ok) {
-          throw new Error("Event not found");
-        }
-        const data = await response.json();
-        setEventData(data);
-        if (data.pollOptions) {
-          setPollOptions(data.pollOptions);
-        }
-        console.log(`Data for the ${data.name} event is`, data);
-      } catch (error) {
-        console.error("Error fetching event:", error);
-      }
-    };
-    fetchEvent();
-  }, [uniqueLink]);
+    fetchEventData();
+  }, []);
+
 
   const handleLocationSelect = (location) => {
+    console.log("Location selected in Event:", location);
     setSelectedLocation(location);
   };
 
-  const handleOptionAdded = (addedOption) => {
+  /* const handleOptionAdded = (addedOption) => {
     // Update the local state with the new option
     setPollOptions(prevOptions => [...prevOptions, { ...addedOption, votes: 0 }]);
     // Clear the selected location
     setSelectedLocation(null);
-  };
+  }; */
 
   return (
     <>
@@ -78,11 +72,14 @@ function Event() {
         <div className="flex flex-col items-center justify-center w-full md:w-2/3 gap-4">
           <Map onLocationSelect={handleLocationSelect} />
           <AddPollOption 
-            eventId={uniqueLink} 
-            selectedLocation={selectedLocation} 
-            onOptionAdded={handleOptionAdded} 
-          />
-          <VotingBar options={pollOptions} eventId={uniqueLink} />
+        eventId={uniqueLink}
+        selectedLocation={selectedLocation}
+        onOptionAdded={fetchEventData} // Refresh poll options after adding
+      />
+      <VotingBar 
+        options={eventData?.pollOptions || []} 
+        eventId={uniqueLink} 
+      />
         </div>
       </div>
     </>

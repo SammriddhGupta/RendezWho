@@ -10,14 +10,20 @@ export default function VotingBar({ options = [], eventId }) {
 
   const handleVote = async (index) => {
     const newOptions = [...pollOptions];
-    newOptions[index].votes += 1;
+    newOptions[index].votes = (newOptions[index].votes || 0) + 1;
     setPollOptions(newOptions);
     
-    await fetch(`http://localhost:5001/api/events/${eventId}/vote`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ optionIndex: index }),
-    });
+    try {
+      await fetch(`http://localhost:5001/api/events/${eventId}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ optionIndex: index }),
+      });
+
+    } catch(error) {
+      console.error('Error voting:', error);
+    }
+    
   };
 
 
@@ -30,7 +36,7 @@ export default function VotingBar({ options = [], eventId }) {
             <OptionButton 
               key={index} 
               option={option.name} 
-              votes={option.votes} 
+              votes={option.votes || 0} 
               onVote={() => handleVote(index)}
             />
           ))

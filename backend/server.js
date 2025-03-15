@@ -64,6 +64,29 @@ app.get('/api/events', async (req, res) => {
 
 app.post('/api/events/:id/poll-options', async (req, res) => {
   try {
+    const { name, x, y, bounds } = req.body;
+    const eventRef = doc(db, 'events', req.params.id);
+    
+    const newOption = {
+      name,
+      coordinates: { x, y },
+      bounds,
+      votes: 0
+    };
+
+    await updateDoc(eventRef, {
+      pollOptions: arrayUnion(newOption)
+    });
+
+    res.status(200).json({ message: "Location added to poll", option: newOption });
+  } catch (error) {
+    console.error('Error adding poll option:', error);
+    res.status(500).json({ error: "Error adding location to poll" });
+  }
+});
+
+app.post('/api/events/:id/vote', async (req, res) => {
+  try {
     const { optionIndex } = req.body;
     if (optionIndex === undefined) {
       return res.status(400).json({ error: "Option index is required" });

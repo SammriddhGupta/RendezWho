@@ -5,7 +5,7 @@ import Availability from "./Components/Availability/Availability.jsx";
 import Map from "./Components/Map.jsx";
 import VotingBar from "./Components/VotingBar.jsx";
 import NameBox from "./Components/NameBox.jsx";
-import NameInput from "./Components/NameInput.jsx";
+
 function Event() {
   const [name, setName] = useState(["Alice", "Bob", "Charlie"]);
 
@@ -36,51 +36,38 @@ function Event() {
   }, [uniqueLink]);
 
   return (
-    <div className='flex flex-col w-full h-100%'>
+    <div className='flex flex-col w-full gap-5'>
       <h1 className="flex text-2xl font-bold text-white bg-violet-500 p-2">RendezWho</h1>
-      <div className="flex flex-col ">
+      <div className='flex flex-col items-center justify-center w-full'>
+        <div className="flex flex-col w-[90%] justify-center items-start p-3 gap-5">
+          <div className='flex flex-col w-full'>
+            {eventData != null ? (
+              <h2 className="text-5xl">{eventData.name}</h2>
+            ) : (
+              <p className="text-gray-500 mt-4 text-center text-2xl font-bold">
+                Loading event details...
+              </p>
+            )}
+            <div className="flex flex-row gap-3 opacity-90 p-2">
+              {name.map((n, index) => (
+                <NameBox key={index} name={n} />
+              ))}
+            </div>
+          </div>
+            
+          <div className="flex flex-col md:flex-row gap-12">
+            <div className="flex flex-2 md:w-1/3">
+              <Availability></Availability>
+            </div>
 
-      </div>
-      {eventData ? (
-        <div className="flex flex-col p-3">
-          <h2 className="text-5xl ">{eventData.name}</h2>
-          <div className="flex flex-row gap-3 opacity-90">
-            {name.map((n, index) => (
-              <NameBox key={index} name={n} />
-            ))}
+            <div className="flex flex-3 flex-col w-full gap-4">
+              <Map />
+              {/* <div className="w-full h-[400px] ">
+                <VotingBar />
+              </div> */}
+            </div>
           </div>
-          {/* Can add more event details */}
-        </div>
-      ) : (
-        <p className="text-gray-500 mt-4 text-center text-2xl font-bold">
-          Loading event details...
-        </p>
-      )}
-      <div className="min-h-screen flex gap-5 justify-center items-start flex-col p-4 px-10 overflow-auto md:flex-row">
-        <div className="flex-col gap-2 flex-1  ">
-          <div className="w-[150px] h-[30px] md:flex-row">
-            {/* <div className="w-full h-full flex mt-2 bg-gray-100 rounded-md items-center justify-left">
-              <input
-                className="w-full pl-4 rounded-md text-gray-700"
-                type="text"
-                placeholder="your name"
-              />
-              <button className="w-20 h-8 bg-[#4379F2] text-white rounded-md text-sm">
-                Add
-              </button>
-            </div> */}
-          </div>
-        </div>
-        <div className=" flex flex-2 h-screen md:w-1/3">
-          <Availability></Availability>
-        </div>
-        <div className="flex flex-3 flex-col items-center justify-center w-full gap-4">
-          <div className="w-full h-[500px] rounded-lg">
-            <Map />
-          </div>
-          {/* <div className="w-full h-[400px] ">
-            <VotingBar />
-          </div> */}
+          
         </div>
       </div>
     </div>

@@ -19,13 +19,12 @@ const MapComponent = () => {
   ];
 
   return (
-    <div className="relative h-screen w-full">
+    <div className="w-full">
       <MapContainer
         center={[-33.9173, 151.2313]}
         zoom={13}
-        className="w-full h-full -z-0 "
+        style={{ width: "50vw", height: "50vh", borderRadius: "20px"}}
       >
-        
         <SearchBar />
         <TileLayer
           url="https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg"

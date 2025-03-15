@@ -10,7 +10,10 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import SearchBar from "./SearchBar";
 
-const MapComponent = () => {
+const MapComponent = ({ onLocationSelect }) => {
+
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
   const markerIcon = new L.Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
     iconSize: [32, 32],
@@ -24,13 +27,30 @@ const MapComponent = () => {
     [51.5, -0.15],
   ];
 
+  const searchEventHandler = (result) => {
+    // Extract bounds, name, x, y
+    const bounds = [result.location.bounds[0], result.location.bounds[1]];
+    const locationData = {
+      name: result.location.label,
+      x: result.location.x,
+      y: result.location.y,
+      bounds: bounds,
+    };
+    setSelectedLocation(locationData);
+    // You can also call a prop callback to notify the parent:
+    if (onLocationSelect) {
+      onLocationSelect(locationData);
+    }
+  };
+
+
   return (
     <MapContainer
       center={[-33.9173, 151.2313]}
       zoom={13}
       className="w-full h-full"
     >
-      <SearchBar />
+      <SearchBar onResultSelect={searchEventHandler} />
       <TileLayer
         //differnt tile layers can be used here, e.g.,:
         //most common openstreetmap tiles

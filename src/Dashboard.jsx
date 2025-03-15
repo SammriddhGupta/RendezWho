@@ -1,9 +1,9 @@
-import MapComponant from "./Componants/Map"
+import MapComponent from "./Componants/Map"
 
 export default function Dashboard() {
   return (
     <div className="h-screen">
-      <MapComponant />
+      <MapComponent />
     </div>
   );
 }

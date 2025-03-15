@@ -88,13 +88,16 @@ function Home() {
           <p className="text-gray-700 mt-4 text-lg">Some sorta slogan</p>
 
           <div className="mt-10 flex flex-col gap-4">
-            <input
-              type="text"
-              placeholder="Enter Event Name"
-              value={eventName}
-              onChange={(e) => setEventName(e.target.value)}
-              className="p-3 border rounded-lg w-full text-lg"
-            />
+            <div className="flex flex-col items-start">
+              <p>Event name</p>
+              <input
+                type="text"
+                placeholder="Enter Event Name"
+                value={eventName}
+                onChange={(e) => setEventName(e.target.value)}
+                className="p-3 border rounded-lg w-full text-lg"
+              />
+            </div>
 
             <div className="w-full flex justify-center">
               <div className="w-full flex">
@@ -159,22 +162,28 @@ function Home() {
               </Box> 
             )}
 
-            <h1>Enter a time range</h1>
-            <TimePicker
-              label="Start"
-              value={startTime}
-              onChange={(newValue) => setStartTime(newValue)}
-              renderInput={(params) => <TextField {...params} />}
-              views={['hours']}
-            />
-      
-            <TimePicker
-              label="End"
-              value={endTime}
-              onChange={(newValue) => setEndTime(newValue)}
-              renderInput={(params) => <TextField {...params} />}
-              views={['hours']}
-            />  
+            <div className="flex flex-col mt-6 text-left">
+              <h1>Enter a time range</h1>
+              <div className='flex flex-row gap-2'>
+                <TimePicker
+                  label="Start"
+                  value={startTime}
+                  onChange={(newValue) => setStartTime(newValue)}
+                  renderInput={(params) => <TextField {...params} />}
+                  views={['hours']}
+                  className='w-1/2'
+                />
+          
+                <TimePicker
+                  label="End"
+                  value={endTime}
+                  onChange={(newValue) => setEndTime(newValue)}
+                  renderInput={(params) => <TextField {...params} />}
+                  views={['hours']}
+                  className='w-1/2'
+                />
+              </div>
+            </div>
            
             <button
               className="bg-purple-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700"

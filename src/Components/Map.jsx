@@ -10,6 +10,7 @@ import {
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import SearchBar from "./SearchBar";
+import VotingBar from "./VotingBar";
 
 const MapComponent = ({ onLocationSelect }) => {
 
@@ -22,7 +23,7 @@ const MapComponent = ({ onLocationSelect }) => {
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],
   });
-  
+
   const polygon = [
     [51.51, -0.12],
     [51.52, -0.14],
@@ -109,6 +110,6 @@ const MapComponent = ({ onLocationSelect }) => {
 
     </>
   );
-}
+};
 
 export default MapComponent;

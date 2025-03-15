@@ -14,7 +14,6 @@ const SearchBar = ({ onResultSelect }) => {
     []
   );
 
-
   const map = useMap();
 
   useEffect(() => {
@@ -41,6 +40,5 @@ const SearchBar = ({ onResultSelect }) => {
 
   return null;
 };
-
 
 export default SearchBar;

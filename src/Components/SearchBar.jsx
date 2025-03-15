@@ -1,6 +1,6 @@
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import { useMap } from "react-leaflet";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import "leaflet-geosearch/assets/css/leaflet.css";
 
 const SearchBar = ({ onResultSelect }) => {
@@ -20,7 +20,8 @@ const SearchBar = ({ onResultSelect }) => {
   useEffect(() => {
     // If an onResultSelect callback is provided, add an event listener
     if (onResultSelect) {
-      searchControl.on("results", (data) => {
+      searchControl.getContainer().addEventListener("results", (event) => {
+        const data = event.detail;
         // data.results is an array of results; we'll pass the first result to the callback
         if (data.results && data.results.length > 0) {
           onResultSelect(data.results[0]);
@@ -34,7 +35,7 @@ const SearchBar = ({ onResultSelect }) => {
     return () => {
       map.removeControl(searchControl);
       if (onResultSelect) {
-        searchControl.off("results");
+        searchControl.getContainer().removeEventListener("results");
       }
     };
   }, [map, onResultSelect, searchControl]);

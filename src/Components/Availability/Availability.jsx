@@ -111,7 +111,7 @@ function Availability() {
           </div>
         ))}
       </div>
-      {console.log(slots)}
+      {/* {console.log(slots)} */}
       <div className="avail-container">
         {/* Dynamically create a row for each date */}
         {Object.keys(slots).map((date) => (

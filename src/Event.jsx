@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./index.css";
-import Day from "./Components/Availability/Day.jsx";
+import Availability from "./Components/Availability/Availability.jsx";
 import Map from "./Components/Map.jsx";
-import VotingBar from "./Components/VotingBar.jsx"
+import VotingBar from "./Components/VotingBar.jsx";
 import NameBox from "./Components/NameBox.jsx";
 
 function Event() {
@@ -11,10 +11,7 @@ function Event() {
 
   //backend for fetching name data goes here
 
-
-
   ////////////////
-
 
   const { uniqueLink } = useParams();
   const [eventData, setEventData] = useState(null);
@@ -22,13 +19,15 @@ function Event() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/events/${uniqueLink}`);
+        const response = await fetch(
+          `http://localhost:5001/api/events/${uniqueLink}`
+        );
         if (!response.ok) {
           throw new Error("Event not found");
         }
         const data = await response.json();
         setEventData(data);
-        console.log(`Data for the ${data.name} event is`, data)
+        console.log(`Data for the ${data.name} event is`, data);
       } catch (error) {
         console.error("Error fetching event:", error);
       }
@@ -61,7 +60,7 @@ function Event() {
         </div>
 
         <div className=" flex flex-1 w-full md:w-1/3">
-          <Day />
+          <Availability></Availability>
         </div>
 
         <div className="flex flex-col items-center justify-center w-full md:w-2/3 gap-4">

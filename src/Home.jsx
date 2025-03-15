@@ -97,9 +97,15 @@ function Home() {
             <button
               className="bg-purple-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700"
               onClick={handleCreateEvent} // Call handleCreateEvent function on click
+              disabled={loading}
             >
-              Create Event
+              {loading ? "Creating event, please wait..." : "Create Event"}
             </button>
+            {loading && (
+              <p className="text-gray-500 mt-2">
+                Redirecting to your event page...
+              </p>
+            )}
           </div>
 
           <div className="mt-6">

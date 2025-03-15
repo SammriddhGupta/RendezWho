@@ -10,7 +10,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/event" element={<Event />} />
+          <Route path="/event/:uniqueLink" element={<Event />} />
         </Routes>
       </div>
     </>

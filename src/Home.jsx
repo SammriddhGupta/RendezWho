@@ -12,12 +12,53 @@ import dayjs from "dayjs";
 function Home() {
   const [eventName, setEventName] = useState("");
   const [selectedRange, setSelectedRange] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // Initialize the navigate function
+  const [startTime, setStartTime] = useState(null); // null means no initial value
+  const [endTime, setEndTime] = useState(null);
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     // You can show the alert here if needed before navigating, or just navigate
-    alert(`Event "${eventName}" Created!`);
-    navigate("/event"); // Navigate to the "/event" page
+
+    if (!eventName || !selectedRange || !selectedRange.from || !selectedRange.to) {
+      alert("Please enter an event name and select a valid date range.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Build the event data payload
+      const eventData = {
+        name: eventName,
+        eventType: "date_range", // For a date range event. Use "fixed_days" if appropriate.
+        startDate: selectedRange.from.toISOString(), // Convert dates to ISO format
+        endDate: selectedRange.to.toISOString(),
+        days: null, // Not used for date_range events
+        startTime: startTime.format("HH:mm"),
+        endTime: endTime.format("HH:mm"),
+      };
+
+      // Send a POST request to your backend API
+      const response = await fetch("http://localhost:5001/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(eventData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create event");
+      }
+
+      const data = await response.json();
+      console.log("Event created:", data);
+      // Navigate to the event page using the unique link returned by the backend
+      navigate(`/event/${data.uniqueLink}`);
+    } catch (error) {
+      console.error("Error creating event:", error);
+      alert("Error creating event. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle date range selection
@@ -28,10 +69,6 @@ function Home() {
       setSelectedRange(range);
     }
   };
-
-  // State for start time and end time
-  const [startTime, setStartTime] = useState(null); // null means no initial value
-  const [endTime, setEndTime] = useState(null);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -97,9 +134,15 @@ function Home() {
             <button
               className="bg-purple-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700"
               onClick={handleCreateEvent} // Call handleCreateEvent function on click
+              disabled={loading}
             >
-              Create Event
+              {loading ? "Creating event, please wait..." : "Create Event"}
             </button>
+            {loading && (
+              <p className="text-gray-500 mt-2">
+                Redirecting to your event page...
+              </p>
+            )}
           </div>
 
           <div className="mt-6">

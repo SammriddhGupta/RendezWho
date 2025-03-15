@@ -84,7 +84,7 @@ function Event() {
             </div>
           </div>
             
-            <div className="flex flex-col md:flex-row gap-12">
+            <div className="flex flex-col md:flex-row gap-12 md:space-x-30">
               <div className="flex flex-2 md:w-1/3">
                 <Availability></Availability>
             </div>

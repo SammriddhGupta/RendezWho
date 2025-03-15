@@ -6,8 +6,9 @@ import "leaflet-geosearch/assets/css/leaflet.css";
 const SearchBar = () => {
   const searchControl = new GeoSearchControl({
     provider: new OpenStreetMapProvider(),
-    style: 'bar',
-    resetButton: '🔍',
+    style: "bar",
+    resetButton: "🔄",
+    searchLabel: "Suggest a meeting place!",
   });
 
   const map = useMap();

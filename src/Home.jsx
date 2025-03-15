@@ -14,6 +14,8 @@ function Home() {
   const [selectedRange, setSelectedRange] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // Initialize the navigate function
+  const [startTime, setStartTime] = useState(null); // null means no initial value
+  const [endTime, setEndTime] = useState(null);
 
   const handleCreateEvent = async () => {
     // You can show the alert here if needed before navigating, or just navigate
@@ -32,8 +34,8 @@ function Home() {
         startDate: selectedRange.from.toISOString(), // Convert dates to ISO format
         endDate: selectedRange.to.toISOString(),
         days: null, // Not used for date_range events
-        startTime: "09:00", // Hard-coded time range for now
-        endTime: "17:00",
+        startTime: startTime.format("HH:mm"),
+        endTime: endTime.format("HH:mm"),
       };
 
       // Send a POST request to your backend API
@@ -67,10 +69,6 @@ function Home() {
       setSelectedRange(range);
     }
   };
-
-  // State for start time and end time
-  const [startTime, setStartTime] = useState(null); // null means no initial value
-  const [endTime, setEndTime] = useState(null);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

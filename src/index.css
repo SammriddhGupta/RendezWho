@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: "TiltNeon";
+   src: url("/src/assets/TiltNeon-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: "TiltNeon", sans-serif;
+}

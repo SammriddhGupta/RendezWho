@@ -23,7 +23,12 @@ function Home() {
   const handleCreateEvent = async () => {
     // You can show the alert here if needed before navigating, or just navigate
 
-    if (!eventName || !selectedRange || !selectedRange.from || !selectedRange.to) {
+    if (
+      !eventName ||
+      !selectedRange ||
+      !selectedRange.from ||
+      !selectedRange.to
+    ) {
       alert("Please enter an event name and select a valid date range.");
       return;
     }
@@ -127,18 +132,18 @@ function Home() {
 
             {showCalendar && (
               <div className="h-[320px] justify-center flex">
-                <DayPicker 
-                  mode="range" 
+                <DayPicker
+                  mode="range"
                   min={1}
                   selected={selectedRange} // Highlight the selected range
                   onSelect={handleDateSelect} // Handle date selection
                 />
-              </div>  
+              </div>
             )}
 
             {!showCalendar && (
               <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap"}}>
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                   {days.map((day, index) => (
                     <Button
                       key={day}
@@ -146,11 +151,15 @@ function Home() {
                       sx={{
                         flexShrink: 1,
                         borderRadius: 0, // Remove rounded corners
-                        backgroundColor: clickedStates[index] ? "transparent" : "#633BBC",
+                        backgroundColor: clickedStates[index]
+                          ? "transparent"
+                          : "#633BBC",
                         color: clickedStates[index] ? "#633BBC" : "#FFFFFF",
                         borderColor: "#633BBC",
                         "&:hover": {
-                          backgroundColor: clickedStates[index] ? "#F3EFFF" : "#4C288F",
+                          backgroundColor: clickedStates[index]
+                            ? "#F3EFFF"
+                            : "#4C288F",
                         },
                       }}
                       onClick={() => handleDayClick(index)} // Toggle clicked state
@@ -159,32 +168,32 @@ function Home() {
                     </Button>
                   ))}
                 </Box>
-              </Box> 
+              </Box>
             )}
 
             <div className="flex flex-col mt-6 text-left">
               <h1>Enter a time range</h1>
-              <div className='flex flex-row gap-2'>
+              <div className="flex flex-row gap-2">
                 <TimePicker
                   label="Start"
                   value={startTime}
                   onChange={(newValue) => setStartTime(newValue)}
                   renderInput={(params) => <TextField {...params} />}
-                  views={['hours']}
-                  className='w-1/2'
+                  views={["hours"]}
+                  className="w-1/2"
                 />
-          
+
                 <TimePicker
                   label="End"
                   value={endTime}
                   onChange={(newValue) => setEndTime(newValue)}
                   renderInput={(params) => <TextField {...params} />}
-                  views={['hours']}
-                  className='w-1/2'
+                  views={["hours"]}
+                  className="w-1/2"
                 />
               </div>
             </div>
-           
+
             <button
               className="bg-purple-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700"
               onClick={handleCreateEvent} // Call handleCreateEvent function on click

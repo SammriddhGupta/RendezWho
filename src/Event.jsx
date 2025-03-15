@@ -36,11 +36,13 @@ function Event() {
   }, [uniqueLink]);
 
   return (
-    <div className='flex flex-col w-full gap-5'>
-      <h1 className="flex text-2xl font-bold text-white bg-violet-500 p-2">RendezWho</h1>
-      <div className='flex flex-col items-center justify-center w-full'>
+    <div className="flex flex-col w-full gap-5">
+      <h1 className="flex text-2xl font-bold text-white bg-violet-500 p-2">
+        RendezWho
+      </h1>
+      <div className="flex flex-col items-center justify-center w-full">
         <div className="flex flex-col w-[90%] justify-center items-start p-3 gap-5">
-          <div className='flex flex-col w-full'>
+          <div className="flex flex-col w-full">
             {eventData != null ? (
               <h2 className="text-5xl">{eventData.name}</h2>
             ) : (
@@ -54,7 +56,7 @@ function Event() {
               ))}
             </div>
           </div>
-            
+
           <div className="flex flex-col md:flex-row gap-12">
             <div className="flex flex-2 md:w-1/3">
               <Availability></Availability>
@@ -67,7 +69,6 @@ function Event() {
               </div> */}
             </div>
           </div>
-          
         </div>
       </div>
     </div>

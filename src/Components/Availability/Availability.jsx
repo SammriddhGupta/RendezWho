@@ -1,7 +1,30 @@
-import React, { useState } from "react";
 import Day from "./Day"; // Assuming Day is the child component
+import { useParams } from "react-router-dom";
 import "./Availability.css";
+import { useEffect, useState } from "react";
+
 function Availability() {
+  const addAvailability = async (eventId, availData) => {
+    try {
+      const response = await fetch(`/api/events/${eventId}/avail`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ avail: availData }), // Pass the availability data
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        console.log("Availability added:", result);
+      } else {
+        console.error("Error adding availability:", result.error);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+
   function generateTimeList(startTime, endTime, interval = 1) {
     const times = [];
 
@@ -61,8 +84,6 @@ function Availability() {
     }));
   };
 
-  const timeList = generateTimeList("09:00", "17:00", 1);
-
   function getHalfHourIntervals(startTime, endTime) {
     // Helper function to convert time in HH:MM format to minutes
     function timeToMinutes(time) {
@@ -81,31 +102,85 @@ function Availability() {
     return Math.floor(diffMinutes / 30);
   }
 
-  const [slots, setSlots] = useState({
-    "2025-04-01T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-    "2025-04-02T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-    "2025-04-03T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-    "2025-04-04T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-    "2025-04-05T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-    "2025-04-06T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-  });
+  function convertToISOString(timestamp) {
+    // Convert seconds to milliseconds
+    const milliseconds =
+      timestamp.seconds * 1000 + Math.floor(timestamp.nanoseconds / 1000000);
+
+    // Create a new Date object using the milliseconds
+    const date = new Date(milliseconds);
+
+    // Convert to ISO string
+    return date.toISOString();
+  }
+
+  function getDaysBetween(startISO, endISO, startTime, endTime) {
+    // Parse the ISO strings into Date objects
+    const startDate = new Date(convertToISOString(startISO));
+    const endDate = new Date(convertToISOString(endISO));
+
+    const dateDict = {}; // Dictionary to store each day
+
+    // Loop through every day between start and end date
+    let currentDate = new Date(startDate);
+
+    // Ensure the loop runs while the current date is on or before the end date
+    while (currentDate <= endDate) {
+      // Format the date as 'YYYY-MM-DD'
+      const dateString = currentDate.toISOString().split("T")[0]; // e.g., "2025-03-16"
+
+      // Add the formatted date to the dictionary with "hello" as the value
+      dateDict[dateString] = Array(
+        getHalfHourIntervals(startTime, endTime)
+      ).fill(false);
+
+      // Move to the next day
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+    }
+    console.log(dateDict);
+    return dateDict;
+  }
+
+  const { uniqueLink } = useParams();
+  // const [eventData, setEventData] = useState(null);
+  const [timeList, setTimeList] = useState(null);
+  const [slots, setSlots] = useState(null);
+
+  // const timeList = generateTimeList("09:00", "17:00", 1);
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/events/${uniqueLink}`
+        );
+        if (!response.ok) {
+          throw new Error("Event not found");
+        }
+        const data = await response.json();
+        // setEventData(data);
+        setTimeList(generateTimeList(data.startTime, data.endTime, 1));
+        setSlots(
+          getDaysBetween(
+            data.startDate,
+            data.endDate,
+            data.startTime,
+            data.endTime
+          )
+        );
+        console.log(`Data for the ${data.name} event is`, data);
+      } catch (error) {
+        console.error("Error fetching event:", error);
+      }
+    };
+    fetchEvent();
+  }, [uniqueLink]);
 
   return (
     <div className="side">
+      {/* {eventData && JSON.stringify(eventData.startDate)} */}
+
       <div className="time-container">
-        {timeList.map((time, index) => (
+        {(timeList || []).map((time, index) => (
           <div key={index} className="time-item">
             {time}
           </div>
@@ -114,18 +189,25 @@ function Availability() {
       {/* {console.log(slots)} */}
       <div className="avail-container">
         {/* Dynamically create a row for each date */}
-        {Object.keys(slots).map((date) => (
-          <div key={date} className="column-container">
-            {/* Display formatted date */}
-            <div className="text">{getFormattedDates(date)}</div>
+        {slots ? (
+          Object.keys(slots).map((date) => (
+            <div key={date} className="column-container">
+              {/* Display formatted date */}
+              <div className="text">{getFormattedDates(date)}</div>
 
-            <Day
-              hours={slots[date]} // Pass the specific day's slots
-              date={date} // Pass the date
-              toggleSlot={toggleSlot} // Pass the toggle function to change the state in the parent
-            />
-          </div>
-        ))}
+              <Day
+                hours={slots[date]} // Pass the specific day's slots
+                date={date} // Pass the date
+                toggleSlot={toggleSlot} // Pass the toggle function to change the state in the parent
+                object={slots}
+                event={addAvailability}
+                eventId={uniqueLink}
+              />
+            </div>
+          ))
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

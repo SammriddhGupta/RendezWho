@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Day.css";
 
-function Day({ hours, date, toggleSlot }) {
+function Day({ hours, date, toggleSlot, object, event, eventId }) {
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [mouseState, setMouseState] = useState(false);
 
@@ -20,6 +20,7 @@ function Day({ hours, date, toggleSlot }) {
 
   const handleMouseUp = () => {
     setIsMouseDown(false); // Set to false when mouse is released
+    event(eventId, object);
   };
 
   const handleMouseEnter = (index) => {

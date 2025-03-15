@@ -64,10 +64,11 @@ app.get('/api/events', async (req, res) => {
 
 app.post('/api/events/:id/poll-options', async (req, res) => {
   try {
-    const { name, x, y, bounds } = req.body;
+    const { display_name, name, x, y, bounds } = req.body;
     const eventRef = doc(db, 'events', req.params.id);
     
     const newOption = {
+      display_name,
       name,
       coordinates: { x, y },
       bounds,
@@ -88,13 +89,9 @@ app.post('/api/events/:id/poll-options', async (req, res) => {
 app.post('/api/events/:id/vote', async (req, res) => {
   try {
     const { optionIndex } = req.body;
-    if (optionIndex === undefined) {
-      return res.status(400).json({ error: "Option index is required" });
-    }
-
     const eventRef = doc(db, 'events', req.params.id);
     const eventSnap = await getDoc(eventRef);
-    
+
     if (!eventSnap.exists()) {
       return res.status(404).json({ error: "Event not found" });
     }
@@ -106,16 +103,13 @@ app.post('/api/events/:id/vote', async (req, res) => {
       return res.status(400).json({ error: "Invalid option index" });
     }
 
-    // Create a new array with the updated vote count
-    const updatedPollOptions = [...pollOptions];
-    updatedPollOptions[optionIndex] = {
-      ...updatedPollOptions[optionIndex],
-      votes: (updatedPollOptions[optionIndex].votes || 0) + 1
-    };
+    const updatedPollOptions = pollOptions.map((option, index) => 
+      index === optionIndex ? 
+      { ...option, votes: (option.votes || 0) + 1 } : 
+      option
+    );
 
-    // Update the document with the new poll options array
     await updateDoc(eventRef, { pollOptions: updatedPollOptions });
-
     res.status(200).json({ message: "Vote recorded successfully" });
   } catch (error) {
     console.error('Error recording vote:', error);

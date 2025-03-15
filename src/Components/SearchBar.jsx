@@ -1,72 +1,46 @@
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import { useMap } from "react-leaflet";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import "leaflet-geosearch/assets/css/leaflet.css";
 
 const SearchBar = ({ onResultSelect }) => {
-  const provider = useMemo(() => new OpenStreetMapProvider(), []);
-  const controlRef = useRef(null);
-
   const searchControl = useMemo(
     () =>
       new GeoSearchControl({
-        provider: provider,
+        provider: new OpenStreetMapProvider(),
         style: "bar",
-        showMarker: true,
-        showPopup: false,
-        autoClose: true,
-        retainZoomLevel: false,
-        animateZoom: true,
-        keepResult: true,
-        searchLabel: "Search for locations",
         resetButton: "🔍",
       }),
-    [provider]
+    []
   );
+
 
   const map = useMap();
 
   useEffect(() => {
-    map.addControl(searchControl);
-    controlRef.current = searchControl;
-
-    const handleResults = (e) => {
-      if (onResultSelect && e.info === 'resultselected' && e.location) {
-        onResultSelect({
-          location: {
-            label: e.location.label,
-            x: e.location.x,
-            y: e.location.y,
-            bounds: [
-              [e.location.bounds.getSouth(), e.location.bounds.getWest()],
-              [e.location.bounds.getNorth(), e.location.bounds.getEast()]
-            ]
-          }
-        });
+    // If a callback is provided, listen to the "results" event
+    const handleShowLocation = (e) => {
+      // e.location contains the result object:
+      // e.location.x, e.location.y, e.location.label, e.location.bounds, etc.
+      if (onResultSelect && e && e.location) {
+        onResultSelect(e.location);
       }
     };
 
-    map.on('geosearch/showlocation', handleResults);
-    
-    // If an onResultSelect callback is provided, add an event listener
-    if (onResultSelect) {
-      searchControl.getContainer().addEventListener("results", (event) => {
-        const data = event.detail;
-        // data.results is an array of results; we'll pass the first result to the callback
-        if (data.results && data.results.length > 0) {
-          onResultSelect(data.results[0]);
-        }
-      });
-    }
+    // Listen for the "geosearch/showlocation" event on the map
+    map.on("geosearch/showlocation", handleShowLocation);
 
-    // Cleanup on unmount: remove the control and event listener
+    map.addControl(searchControl);
+
+    // Clean up the control and event listener when the component unmounts
     return () => {
       map.removeControl(searchControl);
-      map.off('geosearch/showlocation', handleResults);
+      map.off("geosearch/showlocation", handleShowLocation);
     };
-  }, [map, searchControl, onResultSelect]);
+  }, [map, onResultSelect, searchControl]);
 
   return null;
-}
+};
+
 
 export default SearchBar;

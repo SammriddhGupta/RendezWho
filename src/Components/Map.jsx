@@ -32,14 +32,24 @@ const MapComponent = ({ onLocationSelect }) => {
   const searchEventHandler = (result) => {
     console.log("Search result:", result);
     // Extract bounds, name, x, y
+    // const bounds = [result.location.bounds[0], result.location.bounds[1]];
     const locationData = {
-      name: result.location.label,
-      x: result.location.x,
-      y: result.location.y,
-      bounds: result.location.bounds,
+      display_name: result.label,
+      name: result.raw.name,
+      x: result.x,
+      y: result.y,
+      bounds: result.bounds,
     };
+    console.log("Selected location:", locationData);
+    console.log("Selected display name:", locationData.display_name);
+    console.log("Selected name:", locationData.name);
+    console.log("Selected x:", locationData.x);
+    console.log("Selected y:", locationData.y);
+    console.log("Selected bounds:", locationData.bounds[0]);
+    console.log("Selected bounds:", locationData.bounds[1]);
+    
     setSelectedLocation(locationData);
-    setMarkerPosition([result.location.y, result.location.x]);
+    setMarkerPosition([result.y, result.x]);
 
     // Notify parent component
     if (onLocationSelect) {
@@ -47,9 +57,32 @@ const MapComponent = ({ onLocationSelect }) => {
     }
   };
 
+  const addOptionToPoll = async () => {
+    if (!selectedLocation) {
+      alert("No location selected!");
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:5001/api/events/${eventId}/poll-options`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(selectedLocation),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to add poll option");
+      }
+      const data = await response.json();
+      console.log("Poll option added:", data);
+      alert("Location added to poll!");
+    } catch (error) {
+      console.error("Error adding poll option:", error);
+      alert("Error adding location to poll. Please try again.");
+    }
+  };
+
 
   return (
-    <div className="w-full h-96">
+    <>
       <MapContainer
         center={[-33.9173, 151.2313]}
         zoom={13}
@@ -98,12 +131,20 @@ const MapComponent = ({ onLocationSelect }) => {
 
         <Polygon positions={polygon} color="blue" />
       </MapContainer>
-      {/* {selectedLocation && (
-        <div className="mt-2 p-2 bg-purple-100 rounded text-center">
-          <p className="font-medium">Selected: {selectedLocation.name}</p>
+      {selectedLocation && (
+        <div className="mt-4 text-center">
+          <p className="text-lg text-gray-700">
+            Selected: <strong>{selectedLocation.name}</strong>
+          </p>
+          <button 
+            onClick={addOptionToPoll}
+            className="mt-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+          >
+            Add to Poll
+          </button>
         </div>
-      )} */}
-    </div>
+      )}
+    </>
   );
 }
 

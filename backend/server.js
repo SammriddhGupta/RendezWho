@@ -1,7 +1,7 @@
 // server.js
 import express from 'express';
 import cors from 'cors';
-import { collection, addDoc, doc, setDoc, getDoc, getDocs, updateDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc, getDoc, getDocs, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebaseConfig.js';
 
 const app = express();
@@ -66,18 +66,34 @@ app.post('/api/events/:id/poll-options', async (req, res) => {
   try {
     const { display_name, name, x, y, bounds } = req.body;
     const eventRef = doc(db, 'events', req.params.id);
-    
+
+    const boundsObject = {
+      northeast: bounds[0],
+      southwest: bounds[1]
+    };
+
     const newOption = {
       display_name,
       name,
       coordinates: { x, y },
-      bounds,
-      votes: 0
+      bounds: boundsObject,
+      votes: 0,
+      index: Date.now()
     };
 
-    await updateDoc(eventRef, {
-      pollOptions: arrayUnion(newOption)
-    });
+    const eventDoc = await getDoc(eventRef);
+    const eventData = eventDoc.data();
+
+    if (!eventData.pollOptions) {
+      // If pollOptions doesn't exist, create it with the new option
+      await updateDoc(eventRef, { pollOptions: [newOption] });
+    } else {
+      // If pollOptions exists, append the new option
+      const updatedOptions = [...eventData.pollOptions, newOption];
+      await updateDoc(eventRef, {
+        pollOptions: updatedOptions
+      });
+    }
 
     res.status(200).json({ message: "Location added to poll", option: newOption });
   } catch (error) {

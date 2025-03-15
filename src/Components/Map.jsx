@@ -34,7 +34,7 @@ const MapComponent = () => {
       <TileLayer
         //differnt tile layers can be used here, e.g.,:
         //most common openstreetmap tiles
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        // url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
         // High resolution black and white map
         // url="https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png"
@@ -46,8 +46,8 @@ const MapComponent = () => {
         // url="https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png"
 
         // water color map omg this is pretty cool
-        // url="https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg"
-        // attribution='&copy; <a href="https://stamen.com">Stamen Design</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        url="https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg"
+        attribution='&copy; <a href="https://stamen.com">Stamen Design</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       />
       
       <TileLayer url="https://tiles.stadiamaps.com/tiles/stamen_toner_labels/{z}/{x}/{y}{r}.png" />
@@ -58,12 +58,12 @@ const MapComponent = () => {
         <Popup>Hello, this is a custom marker!</Popup>
       </Marker>
 
-      <Circle
+      {/* <Circle
         center={[-33.9173, 151.2313]}
         radius={500}
         color="red"
         fillColor="pink"
-      />
+      /> */}
 
       <Polygon positions={polygon} color="blue" />
     </MapContainer>

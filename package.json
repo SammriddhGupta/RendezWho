@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mantine/core": "^7.17.2",
+    "@mantine/hooks": "^7.17.2",
     "@tailwindcss/postcss": "^4.0.14",
     "leaflet": "^1.9.4",
     "leaflet-geosearch": "^4.2.0",

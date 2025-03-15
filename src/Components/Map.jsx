@@ -28,7 +28,7 @@ const MapComponent = () => {
     <MapContainer
       center={[-33.9173, 151.2313]}
       zoom={13}
-      style={{ height: "50vh", width: "50%", borderRadius: "50px" }}
+      className="w-full h-full"
     >
       <SearchBar />
       <TileLayer

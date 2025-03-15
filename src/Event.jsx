@@ -8,9 +8,21 @@ import AddPollOption from "./Components/AddPollOption.jsx";
 import NameBox from "./Components/NameBox.jsx";
 
 function Event() {
-  const [name, setName] = useState(["Alice", "Bob", "Charlie"]);
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  // const [pollOptions, setPollOptions] = useState([]);
+  const [names, setNames] = useState(["Alice", "Bob", "Charlie"]);
+  const [inputValue, setInputValue] = useState("");
+  const [nameCompleted, setNameCompleted] = useState(false);  const [selectedLocation, setSelectedLocation] = useState(null);
+  // const [pollOptions, setPollOptions] = useState([]);  
+  const handleNameSubmit = () => {
+    if (inputValue.trim() === "") return; // Prevent empty submissions
+    setNames((prevNames) => [...prevNames, inputValue]);
+    console.log("Name submitted:", inputValue);
+    setInputValue("");
+    setNameCompleted(true) // Clear input after submission
+  };
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  }
   const { uniqueLink } = useParams();
   const [eventData, setEventData] = useState(null);
 
@@ -34,11 +46,13 @@ function Event() {
   };
 
   return (
-    <div className='flex flex-col w-full gap-5'>
-      <h1 className="flex text-2xl font-bold text-white bg-violet-500 p-2">RendezWho</h1>
-      <div className='flex flex-col items-center justify-center w-full'>
+    <div className="flex flex-col w-full gap-5">
+      <h1 className="flex text-2xl font-bold text-white bg-violet-500 p-2">
+        RendezWho
+      </h1>
+      <div className="flex flex-col items-center justify-center w-full">
         <div className="flex flex-col w-[90%] justify-center items-start p-3 gap-5">
-          <div className='flex flex-col w-full'>
+          <div className="flex flex-col w-full">
             {eventData != null ? (
               <h2 className="text-5xl">{eventData.name}</h2>
             ) : (
@@ -47,7 +61,24 @@ function Event() {
               </p>
             )}
             <div className="flex flex-row gap-3 opacity-90 p-2">
-              {name.map((n, index) => (
+              {!nameCompleted &&
+              <div className="w-[210px] h-[30px] flex mt-2 bg-gray-100 rounded-md items-center justify-start">
+                <input
+                  className="w-full pl-2 py-2 text-sm rounded-md text-gray-700"
+                  type="text"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  placeholder="Enter your name"
+                />
+                <button
+                  className="w-[80px] h-full bg-violet-500 text-white rounded-md text-sm"
+                  onClick={handleNameSubmit}
+                >
+                  Add
+                </button>
+              </div>
+              }
+              {names.map((n, index) => (
                 <NameBox key={index} name={n} />
               ))}
             </div>

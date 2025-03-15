@@ -3,17 +3,62 @@ import "./index.css";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { TextField } from "@mui/material";
+import dayjs from "dayjs";
 
 function Home() {
   const [eventName, setEventName] = useState("");
   const [selectedRange, setSelectedRange] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // Initialize the navigate function
+  const [startTime, setStartTime] = useState(null); // null means no initial value
+  const [endTime, setEndTime] = useState(null);
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     // You can show the alert here if needed before navigating, or just navigate
-    alert(`Event "${eventName}" Created!`);
-    navigate("/event"); // Navigate to the "/event" page
+
+    if (!eventName || !selectedRange || !selectedRange.from || !selectedRange.to) {
+      alert("Please enter an event name and select a valid date range.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Build the event data payload
+      const eventData = {
+        name: eventName,
+        eventType: "date_range", // For a date range event. Use "fixed_days" if appropriate.
+        startDate: selectedRange.from.toISOString(), // Convert dates to ISO format
+        endDate: selectedRange.to.toISOString(),
+        days: null, // Not used for date_range events
+        startTime: startTime.format("HH:mm"),
+        endTime: endTime.format("HH:mm"),
+      };
+
+      // Send a POST request to your backend API
+      const response = await fetch("http://localhost:5001/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(eventData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create event");
+      }
+
+      const data = await response.json();
+      console.log("Event created:", data);
+      // Navigate to the event page using the unique link returned by the backend
+      navigate(`/event/${data.uniqueLink}`);
+    } catch (error) {
+      console.error("Error creating event:", error);
+      alert("Error creating event. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle date range selection
@@ -26,7 +71,7 @@ function Home() {
   };
 
   return (
-    <>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
         <div className="max-w-2xl text-center bg-white p-10 rounded-2xl shadow-lg">
           <h1 className="text-4xl font-bold text-purple-600">RendezWho</h1>
@@ -41,25 +86,45 @@ function Home() {
               className="p-3 border rounded-lg w-full text-lg"
             />
 
-            <div>
             <h1>Select a date range</h1>
-            <DayPicker 
-              mode="range" 
-              min={1}
-              selected={selectedRange} // Highlight the selected range
-              onSelect={handleDateSelect} // Handle date selection
-            />
-
-            <h1>Select a time range</h1>
-      
+            <div className="h-[320px]">
+              <DayPicker 
+                  mode="range" 
+                  min={1}
+                  selected={selectedRange} // Highlight the selected range
+                  onSelect={handleDateSelect} // Handle date selection
+                />
             </div>
 
+            <h1>Enter a time range</h1>
+            <TimePicker
+              label="Start"
+              value={startTime}
+              onChange={(newValue) => setStartTime(newValue)}
+              renderInput={(params) => <TextField {...params} />}
+              views={['hours']}
+            />
+      
+            <TimePicker
+              label="End"
+              value={endTime}
+              onChange={(newValue) => setEndTime(newValue)}
+              renderInput={(params) => <TextField {...params} />}
+              views={['hours']}
+            />  
+           
             <button
               className="bg-purple-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700"
               onClick={handleCreateEvent} // Call handleCreateEvent function on click
+              disabled={loading}
             >
-              Create Event
+              {loading ? "Creating event, please wait..." : "Create Event"}
             </button>
+            {loading && (
+              <p className="text-gray-500 mt-2">
+                Redirecting to your event page...
+              </p>
+            )}
           </div>
 
           <div className="mt-6">
@@ -67,7 +132,7 @@ function Home() {
           </div>
         </div>
       </div>
-    </>
+    </LocalizationProvider>
   );
 }
 

@@ -10,7 +10,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import SearchBar from "./SearchBar";
 
-export default function MapComponent() {
+const MapComponent = () => {
   const markerIcon = new L.Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
     iconSize: [32, 32],
@@ -28,13 +28,13 @@ export default function MapComponent() {
     <MapContainer
       center={[-33.9173, 151.2313]}
       zoom={13}
-      style={{ height: "500px", width: "100%" }}
+      className="w-full h-full"
     >
       <SearchBar />
       <TileLayer
         //differnt tile layers can be used here, e.g.,:
         //most common openstreetmap tiles
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        // url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
         // High resolution black and white map
         // url="https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png"
@@ -46,8 +46,8 @@ export default function MapComponent() {
         // url="https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png"
 
         // water color map omg this is pretty cool
-        // url="https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg"
-        // attribution='&copy; <a href="https://stamen.com">Stamen Design</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        url="https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg"
+        attribution='&copy; <a href="https://stamen.com">Stamen Design</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       />
       
       <TileLayer url="https://tiles.stadiamaps.com/tiles/stamen_toner_labels/{z}/{x}/{y}{r}.png" />
@@ -58,14 +58,16 @@ export default function MapComponent() {
         <Popup>Hello, this is a custom marker!</Popup>
       </Marker>
 
-      <Circle
+      {/* <Circle
         center={[-33.9173, 151.2313]}
         radius={500}
         color="red"
         fillColor="pink"
-      />
+      /> */}
 
       <Polygon positions={polygon} color="blue" />
     </MapContainer>
   );
 }
+
+export default MapComponent;

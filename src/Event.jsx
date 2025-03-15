@@ -4,6 +4,7 @@ import "./index.css";
 import Day from "./Components/Availability/Day.jsx";
 import Map from "./Components/Map.jsx";
 import VotingBar from "./Components/VotingBar.jsx"
+import AddPollOption from "./Components/AddPollOption.jsx";
 import NameBox from "./Components/NameBox.jsx";
 
 function Event() {
@@ -66,6 +67,7 @@ function Event() {
 
         <div className="flex flex-col items-center justify-center w-full md:w-2/3 gap-4">
           <Map />
+          <AddPollOption />
           <VotingBar />
         </div>
       </div>

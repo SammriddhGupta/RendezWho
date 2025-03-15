@@ -40,9 +40,24 @@ function Home() {
               onChange={(e) => setEventName(e.target.value)}
               className="p-3 border rounded-lg w-full text-lg"
             />
-
+          <div>
+           
+          <div className="flex">
             <div>
-            <h1>Select a date range</h1>
+              <button
+                className="bg-purple-600 text-white px-4 py-2 rounded-l-lg hover:bg-purple-700 transition-colors"
+              >
+                Select Range
+              </button>
+
+              <button
+                className="bg-white text-purple-600 px-4 py-2 rounded-r-lg border border-purple-600 hover:bg-purple-50 transition-colors"
+              >
+                Days of Week
+              </button>
+            </div>
+          </div>
+          
             <DayPicker 
               mode="range" 
               min={1}

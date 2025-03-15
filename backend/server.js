@@ -1,7 +1,7 @@
 // server.js
 import express from 'express';
 import cors from 'cors';
-import { collection, addDoc, doc, setDoc, getDoc, getDocs, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc, getDoc, getDocs, updateDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebaseConfig.js';
 
 const app = express();
@@ -59,6 +59,36 @@ app.get('/api/events', async (req, res) => {
   } catch (error) {
     console.error('Error fetching events:', error);
     res.status(500).json({ error: 'Error fetching events' });
+  }
+});
+
+app.post('/api/events/:id/poll-options', async (req, res) => {
+  try {
+    const { name, x, y, bounds } = req.body; // e.g., "Macquarie Ice Skating Sydney"
+    if (!name || x === undefined || y === undefined || !bounds || !Array.isArray(bounds)) {
+      return res.status(400).json({ error: "Incomplete poll option data" });
+    }
+
+    const eventRef = doc(db, 'events', req.params.id);
+
+    const pollOption = {
+      name,       // location label
+      x,          // x-coordinate
+      y,          // y-coordinate
+      bounds,     // array of bounds coordinates
+      votes: 0,   // initial vote count
+      addedAt: serverTimestamp()
+    };
+
+    // Update the event document by adding the new poll option using arrayUnion
+    await updateDoc(eventRef, {
+      pollOptions: arrayUnion(pollOption)
+    });
+
+    res.status(201).json({ message: "Poll option added successfully" });
+  } catch (error) {
+    console.error('Error adding poll option:', error);
+    res.status(500).json({ error: "Error adding poll option" });
   }
 });
 

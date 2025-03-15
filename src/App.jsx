@@ -1,17 +1,20 @@
+import { useState } from "react";
 import "./index.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Dashboard from "./Dashboard";
-import LandingPage from './LandingPage';
-function App() {
+import Home from "./Home.jsx";
+import Event from "./Event.jsx";
 
+function App() {
   return (
-      <Router>
+    <>
+      <div className="App">
         <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/event" element={<Event />} />
         </Routes>
-      </Router>
+      </div>
+    </>
   );
 }
 
-export default App
+export default App;

@@ -1,15 +1,28 @@
 import { useState } from "react";
 import "./index.css";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+
 
 function Home() {
   const [eventName, setEventName] = useState("");
+  const [selectedRange, setSelectedRange] = useState(null);
   const navigate = useNavigate(); // Initialize the navigate function
 
   const handleCreateEvent = () => {
     // You can show the alert here if needed before navigating, or just navigate
     alert(`Event "${eventName}" Created!`);
     navigate("/event"); // Navigate to the "/event" page
+  };
+
+  // Handle date range selection
+  const handleDateSelect = (range) => {
+    if (!range || !range.from) {
+      setSelectedRange(null); // Reset if no valid range is selected
+    } else {
+      setSelectedRange(range);
+    }
   };
 
   return (
@@ -27,6 +40,20 @@ function Home() {
               onChange={(e) => setEventName(e.target.value)}
               className="p-3 border rounded-lg w-full text-lg"
             />
+
+            <div>
+            <h1>Select a date range</h1>
+            <DayPicker 
+              mode="range" 
+              min={1}
+              selected={selectedRange} // Highlight the selected range
+              onSelect={handleDateSelect} // Handle date selection
+            />
+
+            <h1>Select a time range</h1>
+      
+            </div>
+
             <button
               className="bg-purple-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700"
               onClick={handleCreateEvent} // Call handleCreateEvent function on click

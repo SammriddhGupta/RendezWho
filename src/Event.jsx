@@ -3,37 +3,35 @@ import { useParams } from "react-router-dom";
 import "./index.css";
 import Availability from "./Components/Availability/Availability.jsx";
 import Map from "./Components/Map.jsx";
-import VotingBar from "./Components/VotingBar.jsx";
+import VotingBar from "./Components/VotingBar.jsx"
+import AddPollOption from "./Components/AddPollOption.jsx";
 import NameBox from "./Components/NameBox.jsx";
 
 function Event() {
   const [name, setName] = useState(["Alice", "Bob", "Charlie"]);
-
-  //backend for fetching name data goes here
-
-  ////////////////
-
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  // const [pollOptions, setPollOptions] = useState([]);
   const { uniqueLink } = useParams();
   const [eventData, setEventData] = useState(null);
 
+  const fetchEventData = async () => {
+    try {
+      const response = await fetch(`http://localhost:5001/api/events/${uniqueLink}`);
+      const data = await response.json();
+      setEventData(data);
+    } catch (error) {
+      console.error("Error fetching event:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5001/api/events/${uniqueLink}`
-        );
-        if (!response.ok) {
-          throw new Error("Event not found");
-        }
-        const data = await response.json();
-        setEventData(data);
-        console.log(`Data for the ${data.name} event is`, data);
-      } catch (error) {
-        console.error("Error fetching event:", error);
-      }
-    };
-    fetchEvent();
-  }, [uniqueLink]);
+    fetchEventData();
+  }, []);
+
+  const handleLocationSelect = (location) => {
+    console.log("Location selected in Event:", location);
+    setSelectedLocation(location);
+  };
 
   return (
     <div className='flex flex-col w-full gap-5'>
@@ -55,19 +53,23 @@ function Event() {
             </div>
           </div>
             
-          <div className="flex flex-col md:flex-row gap-12">
-            <div className="flex flex-2 md:w-1/3">
-              <Availability></Availability>
+            <div className="flex flex-col md:flex-row gap-12">
+              <div className="flex flex-2 md:w-1/3">
+                <Availability></Availability>
             </div>
-
-            <div className="flex flex-3 flex-col w-full gap-4">
-              <Map />
-              {/* <div className="w-full h-[400px] ">
-                <VotingBar />
-              </div> */}
+            <div className="flex flex-col items-center justify-center w-full md:w-2/3 gap-4">
+              <Map onLocationSelect={handleLocationSelect} />
+              <AddPollOption 
+                eventId={uniqueLink}
+                selectedLocation={selectedLocation}
+                onOptionAdded={fetchEventData} // Refresh poll options after adding
+              />
+              <VotingBar 
+                options={eventData?.pollOptions || []} 
+                eventId={uniqueLink} 
+              />
             </div>
           </div>
-          
         </div>
       </div>
     </div>

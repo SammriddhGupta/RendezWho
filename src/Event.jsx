@@ -7,19 +7,26 @@ import { useState } from "react";
 
 function Event() {
   const [name, setName] = useState(["Alice", "Bob", "Charlie"]);
-  
+
+  //backend for fetching name data goes here
+
+
+
+  ////////////////
+
+
   return (
     <>
       <h1 className="text-4xl font-tilt text-black bg-amber-300 text-center p-4">
         RendezWho
       </h1>
       <div className="min-h-screen flex gap-5 flex-col p-4 px-10 overflow-auto md:flex-row">
-        <div className="flex-col gap-2 flex-1">
-        {name.map((n, index) => (
-          <NameBox key={index} name={n} />
-        ))}          
+        <div className="flex-row gap-2 flex-1  md:flex-col">
+          {name.map((n, index) => (
+            <NameBox key={index} name={n} />
+          ))}
         </div>
-        
+
         <div className=" flex flex-1 w-full md:w-1/3">
           <Day />
         </div>
@@ -29,7 +36,6 @@ function Event() {
           <VotingBar />
         </div>
       </div>
-    </div>
     </>
   );
 }

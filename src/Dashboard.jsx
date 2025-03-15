@@ -1,4 +1,4 @@
-import MapComponent from "./Componants/Map"
+import MapComponent from "./Components/Map"
 
 export default function Dashboard() {
   return (

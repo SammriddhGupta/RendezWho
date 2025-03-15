@@ -5,7 +5,7 @@ import Home from "./Home.jsx";
 import Event from "./Event.jsx";
 import Dashboard from "./Dashboard.jsx";
 
-function App() {
+const App = () => {
   return (
     <>
       <div className="App">

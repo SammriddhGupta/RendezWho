@@ -1,18 +1,14 @@
-import { useState } from "react";
-import "./index.css";
 import Day from "./Components/Availability/Day.jsx";
-function Event() {
-  return (
-    <>
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-        <div className="max-w-2xl text-center bg-white p-10 rounded-2xl shadow-lg">
-          <h1 className="text-4xl font-bold text-purple-600">RendezWho</h1>
-          {/* <p className="text-gray-700 mt-4 text-lg">Some sorta slogan</p> */}
+import Map from "./Components/Map.jsx";
 
-          <Day></Day>
-        </div>
+const Event = () => {
+  return (
+    <div className="flex items-center justify-center bg-gray-100 p-6 min-h-screen w-full">
+      <div className="flex flex-col md:flex-row justify-center items-center w-9/10 gap-5 md:gap-10 bg-white rounded-lg p-5">
+        <Day/>
+        <Map />
       </div>
-    </>
+    </div>
   );
 }
 

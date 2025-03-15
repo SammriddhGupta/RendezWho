@@ -82,8 +82,8 @@ function Home() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-        <div className="max-w-2xl text-center bg-white p-10 rounded-2xl shadow-lg">
+      <div className="min-h-screen flex flex-col items-center bg-gray-100 p-6">
+        <div className="mt-10 max-2xl text-center bg-white p-8 rounded-2xl shadow-lg">
           <h1 className="text-4xl font-bold text-purple-600">RendezWho</h1>
           <p className="text-gray-700 mt-4 text-lg">Some sorta slogan</p>
 
@@ -97,7 +97,7 @@ function Home() {
             />
 
             <div className="w-full flex justify-center">
-              <div className="w-full max-w-md flex">
+              <div className="w-full flex">
                 <button
                   className={`flex-1 px-4 py-2 rounded-l-lg transition-colors ${
                     showCalendar
@@ -123,8 +123,8 @@ function Home() {
             </div>
 
             {showCalendar && (
-              <div className="h-[320px]">
-              <DayPicker 
+              <div className="h-[320px] justify-center flex">
+                <DayPicker 
                   mode="range" 
                   min={1}
                   selected={selectedRange} // Highlight the selected range
@@ -135,14 +135,13 @@ function Home() {
 
             {!showCalendar && (
               <Box sx={{ display: "flex", justifyContent: "center" }}>
-                {/* Buttons Container */}
-                <Box sx={{ display: "flex", gap: 1 }}>
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap"}}>
                   {days.map((day, index) => (
                     <Button
                       key={day}
                       variant={clickedStates[index] ? "outlined" : "contained"}
                       sx={{
-                        flexGrow: 1,
+                        flexShrink: 1,
                         borderRadius: 0, // Remove rounded corners
                         backgroundColor: clickedStates[index] ? "transparent" : "#633BBC",
                         color: clickedStates[index] ? "#633BBC" : "#FFFFFF",

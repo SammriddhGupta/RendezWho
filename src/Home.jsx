@@ -7,7 +7,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { TextField } from "@mui/material";
-import dayjs from "dayjs";
+import { Box, Button } from "@mui/material";
 
 function Home() {
   const [eventName, setEventName] = useState("");
@@ -16,6 +16,9 @@ function Home() {
   const navigate = useNavigate(); // Initialize the navigate function
   const [startTime, setStartTime] = useState(null); // null means no initial value
   const [endTime, setEndTime] = useState(null);
+  const [showCalendar, setShowCalendar] = useState(true);
+  const [clickedStates, setClickedStates] = useState(Array(7).fill(false));
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const handleCreateEvent = async () => {
     // You can show the alert here if needed before navigating, or just navigate
@@ -70,6 +73,13 @@ function Home() {
     }
   };
 
+  // Handle button click (Sun, Mon, Tue...)
+  const handleDayClick = (index) => {
+    const newClickedStates = [...clickedStates];
+    newClickedStates[index] = !newClickedStates[index]; // Toggle clicked state
+    setClickedStates(newClickedStates);
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
@@ -87,32 +97,68 @@ function Home() {
             />
 
             <div className="w-full flex justify-center">
-              {/* Container for Buttons */}
               <div className="w-full max-w-md flex">
-                {/* Left Button (Purple Background) */}
                 <button
-                  className="flex-1 bg-purple-600 text-white px-4 py-2 rounded-l-lg hover:bg-purple-700 transition-colors"
+                  className={`flex-1 px-4 py-2 rounded-l-lg transition-colors ${
+                    showCalendar
+                      ? "bg-purple-600 text-white"
+                      : "bg-white text-purple-600 border border-purple-600"
+                  }`}
+                  onClick={() => setShowCalendar(true)}
                 >
                   Select Range
                 </button>
 
-                {/* Right Button (White Background, Purple Border) */}
                 <button
-                  className="flex-1 bg-white text-purple-600 px-4 py-2 rounded-r-lg border border-purple-600 hover:bg-purple-50 transition-colors"
+                  className={`flex-1 px-4 py-2 rounded-r-lg transition-colors ${
+                    !showCalendar
+                      ? "bg-purple-600 text-white"
+                      : "bg-white text-purple-600 border border-purple-600"
+                  }`}
+                  onClick={() => setShowCalendar(false)} // Hide calendar
                 >
                   Days of Week
                 </button>
               </div>
             </div>
 
-            <div className="h-[320px]">
+            {showCalendar && (
+              <div className="h-[320px]">
               <DayPicker 
                   mode="range" 
                   min={1}
                   selected={selectedRange} // Highlight the selected range
                   onSelect={handleDateSelect} // Handle date selection
                 />
-            </div>
+              </div>  
+            )}
+
+            {!showCalendar && (
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                {/* Buttons Container */}
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  {days.map((day, index) => (
+                    <Button
+                      key={day}
+                      variant={clickedStates[index] ? "outlined" : "contained"}
+                      sx={{
+                        flexGrow: 1,
+                        borderRadius: 0, // Remove rounded corners
+                        backgroundColor: clickedStates[index] ? "transparent" : "#633BBC",
+                        color: clickedStates[index] ? "#633BBC" : "#FFFFFF",
+                        borderColor: "#633BBC",
+                        "&:hover": {
+                          backgroundColor: clickedStates[index] ? "#F3EFFF" : "#4C288F",
+                        },
+                      }}
+                      onClick={() => handleDayClick(index)} // Toggle clicked state
+                    >
+                      {day}
+                    </Button>
+                  ))}
+                </Box>
+              </Box> 
+            )}
 
             <h1>Enter a time range</h1>
             <TimePicker

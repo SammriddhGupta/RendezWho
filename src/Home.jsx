@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./index.css";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
-const Home = () => {
+function Home() {
   const [eventName, setEventName] = useState("");
   const navigate = useNavigate(); // Initialize the navigate function
 

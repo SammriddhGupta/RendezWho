@@ -67,13 +67,11 @@ const MapComponent = ({ onLocationSelect, onOptionAdded, eventId, }) => {
         >
           <AutoPopup open={popupLocation} setOpen={setPopupLocation}>
             <h3 className="font-bold text-center">{location.name}</h3>
-          
               <AddPollOption
                 eventId={eventId}
                 selectedLocation={location}
                 onOptionAdded={onOptionAdded}
               />
-            
           </AutoPopup>
         </Marker>
       ))}

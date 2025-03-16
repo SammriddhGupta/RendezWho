@@ -59,8 +59,8 @@ function CombinedAvailability({ eventId }) {
         // Sort by count (highest first)
         allTimeSlots.sort((a, b) => b.count - a.count);
         
-        // Take top 5 or fewer
-        setTopTimes(allTimeSlots.slice(0, 5));
+        // Take top 3 or fewer
+        setTopTimes(allTimeSlots.slice(0, 3));
         
       } catch (err) {
         console.error('Error fetching combined availability:', err);

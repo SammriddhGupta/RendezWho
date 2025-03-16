@@ -6,6 +6,7 @@ import Map from "./Components/Map.jsx";
 import VotingBar from "./Components/VotingBar.jsx"
 import AddPollOption from "./Components/AddPollOption.jsx";
 import NameBox from "./Components/NameBox.jsx";
+import CombinedAvailability from "./Components/CombinedAvailability";
 
 function Event() {
   const [names, setNames] = useState([]);
@@ -132,6 +133,7 @@ function Event() {
                   Please enter your name to mark your availability
                 </div>
               )}
+            
             </div>
             <div className="flex flex-col items-center justify-center w-full md:w-2/3 gap-4">
               <Map onLocationSelect={handleLocationSelect} />
@@ -146,6 +148,13 @@ function Event() {
               />
             </div>
           </div>
+          {/* CombinedAvailability section - add this below the calendar */}
+          {nameCompleted && (
+            <div className="w-[50] mt-8">
+              <h3 className="text-xl font-semibold mb-4">Best Meeting Times</h3>
+              <CombinedAvailability eventId={uniqueLink} />
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { TextField } from "@mui/material";
 import { Box, Button } from "@mui/material";
-
+import cheesecracker from "./assets/cheesecracker.png";
 function Home() {
   const [eventName, setEventName] = useState("");
   const [selectedRange, setSelectedRange] = useState(null);
@@ -23,7 +23,12 @@ function Home() {
   const handleCreateEvent = async () => {
     // You can show the alert here if needed before navigating, or just navigate
 
-    if (!eventName || !selectedRange || !selectedRange.from || !selectedRange.to) {
+    if (
+      !eventName ||
+      !selectedRange ||
+      !selectedRange.from ||
+      !selectedRange.to
+    ) {
       alert("Please enter an event name and select a valid date range.");
       return;
     }
@@ -83,16 +88,20 @@ function Home() {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className="min-h-screen flex flex-col items-center bg-gray-100 p-6">
-        <div className="mt-10 max-w-2xl text-center bg-white p-8 rounded-2xl shadow-lg">
-          <h1 className="text-4xl font-bold text-purple-600">RendezWho</h1>
-          <p className="text-gray-700 mt-4 text-lg">Some sorta slogan</p>
-
+        <div className="mt-10 max-w-2xl text-center bg-white p-8 rounded-2xl">
+          <div className="flex items-center justify-center gap-2">
+            <img src={cheesecracker} alt="logo" className="w-12 h-12" />
+            <h1 className="text-5xl font-bold text-purple-600">RendezWho</h1>
+          </div>
+          <p className="text-gray-500 mt-1 text-sm">
+            Who, When, Where, all in once
+          </p>
           <div className="mt-10 flex flex-col gap-4">
             <div className="flex flex-col items-start">
-              <p>Event name</p>
+              {/* <p>Event name</p> */}
               <input
                 type="text"
-                placeholder="Enter Event Name"
+                placeholder="What is the meeting about?"
                 value={eventName}
                 onChange={(e) => setEventName(e.target.value)}
                 className="p-3 border rounded-lg w-full text-lg"
@@ -109,7 +118,7 @@ function Home() {
                   }`}
                   onClick={() => setShowCalendar(true)}
                 >
-                  Select Range
+                  For one-time event
                 </button>
 
                 <button
@@ -120,38 +129,46 @@ function Home() {
                   }`}
                   onClick={() => setShowCalendar(false)} // Hide calendar
                 >
-                  Days of Week
+                  For recuring event
                 </button>
               </div>
             </div>
 
             {showCalendar && (
               <div className="h-[320px] justify-center flex">
-                <DayPicker 
-                  mode="range" 
+                <DayPicker
+                  mode="range"
                   min={1}
                   selected={selectedRange} // Highlight the selected range
                   onSelect={handleDateSelect} // Handle date selection
                 />
-              </div>  
+              </div>
             )}
 
             {!showCalendar && (
               <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap"}}>
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                   {days.map((day, index) => (
                     <Button
                       key={day}
                       variant={clickedStates[index] ? "outlined" : "contained"}
                       sx={{
                         flexShrink: 1,
-                        borderRadius: 0, // Remove rounded corners
-                        backgroundColor: clickedStates[index] ? "transparent" : "#633BBC",
-                        color: clickedStates[index] ? "#633BBC" : "#FFFFFF",
-                        borderColor: "#633BBC",
+                        borderRadius: 100, // Remove rounded corners
+                        backgroundColor: clickedStates[index]
+                          ? "#7f27fb"
+                          : "transparent",
+                        color: clickedStates[index] ? "#FFFFFF" : "#7f27fb",
+                        borderColor: "#7f27fb",
                         "&:hover": {
-                          backgroundColor: clickedStates[index] ? "#F3EFFF" : "#4C288F",
+                          backgroundColor: clickedStates[index]
+                            ? "#4C288F"
+                            : "#F3EFFF",
+
+                          borderColor: "#4C288F",
+                          boxShadow: 0,
                         },
+                        boxShadow: 0,
                       }}
                       onClick={() => handleDayClick(index)} // Toggle clicked state
                     >
@@ -159,32 +176,32 @@ function Home() {
                     </Button>
                   ))}
                 </Box>
-              </Box> 
+              </Box>
             )}
 
             <div className="flex flex-col mt-6 text-left">
               <h1>Enter a time range</h1>
-              <div className='flex flex-row gap-2'>
+              <div className="flex flex-row gap-2">
                 <TimePicker
                   label="Start"
                   value={startTime}
                   onChange={(newValue) => setStartTime(newValue)}
                   renderInput={(params) => <TextField {...params} />}
-                  views={['hours']}
-                  className='w-1/2'
+                  views={["hours"]}
+                  className="w-1/2"
                 />
-          
+
                 <TimePicker
                   label="End"
                   value={endTime}
                   onChange={(newValue) => setEndTime(newValue)}
                   renderInput={(params) => <TextField {...params} />}
-                  views={['hours']}
-                  className='w-1/2'
+                  views={["hours"]}
+                  className="w-1/2"
                 />
               </div>
             </div>
-           
+
             <button
               className="bg-purple-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700"
               onClick={handleCreateEvent} // Call handleCreateEvent function on click
@@ -198,9 +215,10 @@ function Home() {
               </p>
             )}
           </div>
-
           <div className="mt-6">
-            <p className="text-gray-500">Some text here</p>
+            <p className="text-gray-300">
+              Created by cheesecracker (we are def not dying)
+            </p>
           </div>
         </div>
       </div>

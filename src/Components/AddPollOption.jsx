@@ -11,6 +11,7 @@ const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
     }
 
     setLoading(true);
+
     try {
       const locationData = {
         display_name: selectedLocation.display_name,
@@ -36,11 +37,16 @@ const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
 
       const data = await response.json();
       console.log("Poll option added:", data);
-      alert("Location added to poll!");
+      if (!poolAdded) {
+        alert("Location added to poll!");
+      } else {
+        alert("Voted");
+      }
 
       if (onOptionAdded) {
         onOptionAdded(locationData);
       }
+
       setPoolAdded(true);
     } catch (error) {
       console.error("Error adding poll option:", error);

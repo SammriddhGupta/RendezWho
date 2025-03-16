@@ -80,7 +80,7 @@ function Event() {
   return (
     <div className="flex flex-col w-full gap-5">
       <h1 className="flex text-2xl font-bold text-white bg-violet-500 p-2">
-        RendezWho
+        SpotSync
       </h1>
       <div className="flex flex-col items-center justify-center w-full">
         <div className="flex flex-col w-[90%] justify-center items-start p-3 gap-5">

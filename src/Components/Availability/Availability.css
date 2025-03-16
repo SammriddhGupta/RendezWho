@@ -1,7 +1,11 @@
 .avail-container {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+}
+
+.grid-container {
+  overflow-y: auto;
+  max-width: 610px;
 }
 
 .column-container {

@@ -3,10 +3,12 @@ import { useParams } from "react-router-dom";
 import "./index.css";
 import Availability from "./Components/Availability/Availability.jsx";
 import Map from "./Components/Map.jsx";
-import VotingBar from "./Components/VotingBar.jsx"
+import VotingBar from "./Components/VotingBar.jsx";
 import AddPollOption from "./Components/AddPollOption.jsx";
 import NameBox from "./Components/NameBox.jsx";
 import CombinedAvailability from "./Components/CombinedAvailability";
+import "./Event.css";
+import { useNavigate } from "react-router-dom";
 
 function Event() {
   const [names, setNames] = useState([]);
@@ -18,27 +20,29 @@ function Event() {
   const { uniqueLink } = useParams();
   const [eventData, setEventData] = useState(null);
 
-  // const [pollOptions, setPollOptions] = useState([]);  
+  // const [pollOptions, setPollOptions] = useState([]);
   const handleNameSubmit = () => {
     if (inputValue.trim() === "") return; // Prevent empty submissions
 
     const userName = inputValue.trim();
     setNames((prevNames) => [...prevNames, inputValue]);
-    setCurrentUser(userName); 
+    setCurrentUser(userName);
     console.log("Name submitted:", userName);
     setInputValue("");
-    setNameCompleted(true) // Clear input after submission
+    setNameCompleted(true); // Clear input after submission
 
     localStorage.setItem(`rendezwho_user_${uniqueLink}`, userName);
   };
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
-  }
+  };
 
   const fetchEventData = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/events/${uniqueLink}`);
+      const response = await fetch(
+        `http://localhost:5001/api/events/${uniqueLink}`
+      );
       const data = await response.json();
       setEventData(data);
 
@@ -46,7 +50,6 @@ function Event() {
       if (data.participants && Array.isArray(data.participants)) {
         setNames(data.participants);
       }
-
     } catch (error) {
       console.error("Error fetching event:", error);
     }
@@ -54,7 +57,7 @@ function Event() {
 
   useEffect(() => {
     fetchEventData();
-    
+
     // Check if the user has already signed in for this event
     const savedUsername = localStorage.getItem(`rendezwho_user_${uniqueLink}`);
     if (savedUsername) {
@@ -66,6 +69,12 @@ function Event() {
   const handleLocationSelect = (location) => {
     console.log("Location selected in Event:", location);
     setSelectedLocation(location);
+  };
+
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/confirmEvent"); // This will redirect to the /confirmEvent route
   };
 
   return (
@@ -103,7 +112,7 @@ function Event() {
               ) : (
                 <div className="flex items-center gap-2">
                   <NameBox name={currentUser} />
-                  <button 
+                  <button
                     className="text-xs text-violet-500 underline hover:text-violet-700"
                     onClick={() => {
                       setNameCompleted(false);
@@ -114,25 +123,23 @@ function Event() {
                   </button>
                 </div>
               )}
-              {names.filter(name => name !== currentUser).map((n, index) => (
-                <NameBox key={index} name={n} />
-              ))}
+              {names
+                .filter((name) => name !== currentUser)
+                .map((n, index) => (
+                  <NameBox key={index} name={n} />
+                ))}
             </div>
           </div>
-            
+
           <div className="flex flex-col flex-1 w-full md:flex-row gap-12 ">
             <div className="flex flex-2 md:w-1/3">
               {nameCompleted ? (
-                <Availability 
-                  eventId={uniqueLink} 
-                  username={currentUser} 
-                />
+                <Availability eventId={uniqueLink} username={currentUser} />
               ) : (
                 <div className="p-4 bg-gray-100 rounded shadow text-center">
                   Please enter your name to mark your availability
                 </div>
               )}
-            
             </div>
             <div className="flex-col flex-3 items-center justify-center w-full md:w-2/3 gap-4">
               <Map
@@ -155,6 +162,9 @@ function Event() {
               <CombinedAvailability eventId={uniqueLink} />
             </div>
           )}
+          <div className="final-button" onClick={handleClick}>
+            Confirm Event
+          </div>
         </div>
       </div>
     </div>

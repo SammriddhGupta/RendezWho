@@ -61,8 +61,8 @@ export default function VotingBar({ options = [], eventId }) {
           ))
         ) : (
           <p className="text-gray-500">
-            No locations added yet. Search for a location on the map and add it
-            to the poll.
+            No locations added yet. 
+            Search for a location on the map and add it to the poll.
           </p>
         )}
       </div>

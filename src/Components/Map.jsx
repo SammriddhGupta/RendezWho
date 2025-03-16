@@ -5,10 +5,12 @@ import L from "leaflet";
 import SearchBar from "./SearchBar";
 import AddPollOption from "./AddPollOption";
 
-const MapComponent = ({ onLocationSelect, onOptionAdded, eventId }) => {
+const MapComponent = ({ onLocationSelect, onOptionAdded, eventId, eventData }) => {
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupLocation, setPopupLocation] = useState(null);
+  const [pollOptions, setPollOptions] = useState([]);
+
   const markerIcon = new L.Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
     iconSize: [32, 32],
@@ -50,6 +52,10 @@ const MapComponent = ({ onLocationSelect, onOptionAdded, eventId }) => {
 
   useEffect(() => {
   }, [selectedLocations]);
+
+  useEffect(() => {
+    onOptionAdded(eventId);
+  }, [])
 
   return (
     <MapContainer

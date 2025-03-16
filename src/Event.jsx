@@ -95,6 +95,7 @@ function Event() {
                 onOptionAdded={fetchEventData}
                 eventId={uniqueLink}
                 selectedLocation={selectedLocation}
+                eventData={eventData}
               />
               <VotingBar
                 options={eventData?.pollOptions || []}

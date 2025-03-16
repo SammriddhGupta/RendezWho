@@ -1,7 +1,13 @@
 .avail-container {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  /* justify-content: center; */
+}
+
+.scroll-container {
+  /* background-color: blue; */
+  overflow-y: auto;
+  width: 630px; /* Width of scrollable*/
 }
 
 .column-container {

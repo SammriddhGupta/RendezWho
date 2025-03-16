@@ -187,27 +187,29 @@ function Availability() {
         ))}
       </div>
       {/* {console.log(slots)} */}
-      <div className="avail-container">
-        {/* Dynamically create a row for each date */}
-        {slots ? (
-          Object.keys(slots).map((date) => (
-            <div key={date} className="column-container">
-              {/* Display formatted date */}
-              <div className="text">{getFormattedDates(date)}</div>
+      <div className="scroll-container">
+        <div className="avail-container">
+          {/* Dynamically create a row for each date */}
+          {slots ? (
+            Object.keys(slots).map((date) => (
+              <div key={date} className="column-container">
+                {/* Display formatted date */}
+                <div className="text">{getFormattedDates(date)}</div>
 
-              <Day
-                hours={slots[date]} // Pass the specific day's slots
-                date={date} // Pass the date
-                toggleSlot={toggleSlot} // Pass the toggle function to change the state in the parent
-                object={slots}
-                event={addAvailability}
-                eventId={uniqueLink}
-              />
-            </div>
-          ))
-        ) : (
-          <></>
-        )}
+                <Day
+                  hours={slots[date]} // Pass the specific day's slots
+                  date={date} // Pass the date
+                  toggleSlot={toggleSlot} // Pass the toggle function to change the state in the parent
+                  object={slots}
+                  event={addAvailability}
+                  eventId={uniqueLink}
+                />
+              </div>
+            ))
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
     </div>
   );

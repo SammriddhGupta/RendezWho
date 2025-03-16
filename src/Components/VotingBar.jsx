@@ -16,8 +16,7 @@ export default function VotingBar({ options = [], eventId }) {
         mergedOptions[name].votes += option.votes || 1; // Sum votes for duplicates
       }
     });
-
-    return Object.values(mergedOptions);
+    return Object.values(mergedOptions).sort((a, b) => b.votes - a.votes);
   };
 
   useEffect(() => {
@@ -51,14 +50,17 @@ export default function VotingBar({ options = [], eventId }) {
       </h3>
       <div className="flex flex-col items-center justify-center gap-3 w-[80%] p-1">
         {pollOptions.length > 0 ? (
-          pollOptions.map((option, index) => (
-            <OptionButton
-              key={index}
-              option={option.name}
-              votes={option.votes || 1}
-              onVote={() => handleVote(option.name)}
-            />
-          ))
+          pollOptions.map((option, index) => {
+            const isTopVoted = index === 0; // First item in sorted list
+            return (
+              <OptionButton
+                key={index}
+                option={option.name + (isTopVoted ? " ⭐" : "")} // Add star emoji if highest vote
+                votes={option.votes || 0}
+                onVote={() => handleVote(option.name)}
+              />
+            );
+          })
         ) : (
           <p className="text-gray-500">
             No locations added yet. Search for a location on the map and add it

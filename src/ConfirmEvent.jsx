@@ -12,7 +12,7 @@ function ConfirmEvent() {
   const navigate = useNavigate(); // Initialize the navigate function
   const [selectedStartTime, setSelectedStartTime] = useState(dayjs("2025-05-01T10:30"));
   const [selectedEndTime, setSelectedEndTime] = useState(dayjs("2025-05-01T20:30"));
-  const [eventName] = useState("Event Name");
+  const [eventName] = useState("Group Meeting for Cheese Flavour");
   const [date] = useState("Saturday, Apr 14, 2025");
   const places = ["UNSW", "USYD", "UTS"];
   const [selectedPlace, setSelectedPlace] = useState(places[0]); // change to put top voted place.

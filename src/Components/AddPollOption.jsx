@@ -3,13 +3,15 @@ import { useState } from "react";
 const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
   const [loading, setLoading] = useState(false);
   const [poolAdded, setPoolAdded] = useState(false);
+  const [error, setError] = useState("");
 
   const addOptionToPoll = async () => {
     if (!selectedLocation) {
-      alert("No location selected.");
+      setError("No location selected.");
       return;
     }
 
+    setError("");
     setLoading(true);
 
     try {
@@ -37,33 +39,35 @@ const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
 
       const data = await response.json();
       console.log("Poll option added:", data);
-      if (!poolAdded) {
-        alert("Location added to poll!");
-      } else {
-        alert("Voted");
-      }
+
+      setPoolAdded(true);
+     
 
       if (onOptionAdded) {
         onOptionAdded(locationData);
       }
-
-      setPoolAdded(true);
+      
     } catch (error) {
       console.error("Error adding poll option:", error);
-      alert("Error adding poll option. Please try again.");
+      setError("Error adding poll option. Please try again.");
     }
 
     setLoading(false);
   };
 
   return (
-    <button
-      onClick={addOptionToPoll}
-      className="mx-auto flex items-center justify-center mt-2 mb-6 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors w-64"
-      disabled={loading}
-    >
-      {(loading) ? "Adding" : (poolAdded) ? "Add vote" : "Add to poll"}
-    </button>
+    <>
+      <button
+        onClick={addOptionToPoll}
+        className="mx-auto flex items-center justify-center mt-2 mb-6 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors w-64"
+        disabled={loading}
+      >
+        {(loading) ? "Adding" : (poolAdded) ? "Add vote" : "Add to poll"}
+      </button>
+      {error && (
+        <p className="text-red-500 text-center mt-2 text-sm">{error}</p>
+      )}
+    </>
   );
 };
 

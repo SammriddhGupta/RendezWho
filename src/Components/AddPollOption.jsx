@@ -8,22 +8,26 @@ const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
       alert("No location selected.");
       return;
     }
+
     setLoading(true);
     try {
-        const locationData = {
-            display_name: selectedLocation.display_name,
-            name: selectedLocation.name,
-            x: selectedLocation.x,
-            y: selectedLocation.y,
-            bounds: selectedLocation.bounds
-          };
+      const locationData = {
+        display_name: selectedLocation.display_name,
+        name: selectedLocation.name,
+        x: selectedLocation.x,
+        y: selectedLocation.y,
+        bounds: selectedLocation.bounds,
+      };
 
-        console.log("Sending poll option for eventId:", eventId, locationData);
-        const response = await fetch(`http://localhost:5001/api/events/${eventId}/poll-options`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(locationData),
-        });
+      console.log("Sending poll option for eventId:", eventId, locationData);
+      const response = await fetch(
+        `http://localhost:5001/api/events/${eventId}/poll-options`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(locationData),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to add poll option");
@@ -40,6 +44,7 @@ const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
       console.error("Error adding poll option:", error);
       alert("Error adding poll option. Please try again.");
     }
+
     setLoading(false);
   };
 

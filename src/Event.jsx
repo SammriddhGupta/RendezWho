@@ -121,7 +121,7 @@ function Event() {
             </div>
           </div>
             
-          <div className="flex flex-col md:flex-row gap-12 md:space-x-30">
+          <div className="flex flex-col flex-1 w-full md:flex-row gap-12 ">
             <div className="flex flex-2 md:w-1/3">
               {nameCompleted ? (
                 <Availability 
@@ -135,16 +135,16 @@ function Event() {
               )}
             
             </div>
-            <div className="flex flex-col items-center justify-center w-full md:w-2/3 gap-4">
-              <Map onLocationSelect={handleLocationSelect} />
-              <AddPollOption 
+            <div className="flex-col flex-3 items-center justify-center w-full md:w-2/3 gap-4">
+              <Map
+                onLocationSelect={handleLocationSelect}
+                onOptionAdded={fetchEventData}
                 eventId={uniqueLink}
                 selectedLocation={selectedLocation}
-                onOptionAdded={fetchEventData} // Refresh poll options after adding
               />
-              <VotingBar 
-                options={eventData?.pollOptions || []} 
-                eventId={uniqueLink} 
+              <VotingBar
+                options={eventData?.pollOptions || []}
+                eventId={uniqueLink}
               />
             </div>
           </div>

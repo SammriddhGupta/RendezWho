@@ -133,6 +133,159 @@ app.post('/api/events/:id/vote', async (req, res) => {
   }
 });
 
+app.post('/api/events/:id/availability', async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { username, availability } = req.body;
+    
+    if (!username || !availability) {
+      return res.status(400).json({ error: 'Username and availability are required' });
+    }
+    
+    const eventRef = doc(db, 'events', eventId);
+    const eventSnap = await getDoc(eventRef);
+    
+    if (!eventSnap.exists()) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    const eventData = eventSnap.data();
+    
+    // Create the availability object for this user
+    const userAvailability = {
+      username,
+      availability,
+      updatedAt: Date.now()
+    };
+    
+    // Check if event already has availability data
+    if (!eventData.userAvailabilities) {
+      // If not, create a new array with this user's availability
+      await updateDoc(eventRef, {
+        userAvailabilities: [userAvailability],
+        participants: [username] // Add to participants list
+      });
+    } else {
+      // Find if this user already has submitted availability
+      const userIndex = eventData.userAvailabilities.findIndex(ua => ua.username === username);
+      
+      let updatedAvailabilities = [...eventData.userAvailabilities];
+      let updatedParticipants = eventData.participants || [];
+      
+      // Add username to participants list if not already there
+      if (!updatedParticipants.includes(username)) {
+        updatedParticipants.push(username);
+      }
+      
+      if (userIndex >= 0) {
+        // Update existing user's availability
+        updatedAvailabilities[userIndex] = userAvailability;
+      } else {
+        // Add new user's availability
+        updatedAvailabilities.push(userAvailability);
+      }
+      
+      // Update the document
+      await updateDoc(eventRef, {
+        userAvailabilities: updatedAvailabilities,
+        participants: updatedParticipants
+      });
+    }
+    
+    res.status(200).json({ message: 'Availability saved successfully' });
+  } catch (error) {
+    console.error('Error saving availability:', error);
+    res.status(500).json({ error: 'Error saving availability' });
+  }
+});
+
+// Get user availability
+app.get('/api/events/:id/availability/:username', async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const username = req.params.username;
+    
+    const eventRef = doc(db, 'events', eventId);
+    const eventSnap = await getDoc(eventRef);
+    
+    if (!eventSnap.exists()) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    
+    const eventData = eventSnap.data();
+    
+    // If no availabilities exist yet
+    if (!eventData.userAvailabilities) {
+      return res.status(404).json({ error: 'No availability data found' });
+    }
+    
+    // Find this user's availability
+    const userAvailability = eventData.userAvailabilities.find(ua => ua.username === username);
+    
+    if (!userAvailability) {
+      return res.status(404).json({ error: 'No availability found for this user' });
+    }
+    
+    res.status(200).json(userAvailability);
+  } catch (error) {
+    console.error('Error fetching availability:', error);
+    res.status(500).json({ error: 'Error fetching availability' });
+  }
+});
+
+// Get combined availability for all users
+app.get('/api/events/:id/combined-availability', async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    
+    const eventRef = doc(db, 'events', eventId);
+    const eventSnap = await getDoc(eventRef);
+    
+    if (!eventSnap.exists()) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    
+    const eventData = eventSnap.data();
+    
+    // If no availabilities exist yet
+    if (!eventData.userAvailabilities || eventData.userAvailabilities.length === 0) {
+      return res.status(404).json({ error: 'No availability data found' });
+    }
+    
+    // Initialize combined availability object
+    const combinedAvailability = {};
+    
+    // Go through each user's availability data
+    eventData.userAvailabilities.forEach(userAvail => {
+      const availability = userAvail.availability;
+      
+      // For each date in this user's availability
+      Object.keys(availability).forEach(date => {
+        // Initialize this date in combined availability if it doesn't exist
+        if (!combinedAvailability[date]) {
+          combinedAvailability[date] = Array(availability[date].length).fill(0);
+        }
+        
+        // For each time slot, increment the count for each 'true' value
+        availability[date].forEach((isAvailable, index) => {
+          if (isAvailable) {
+            combinedAvailability[date][index]++;
+          }
+        });
+      });
+    });
+    
+    res.status(200).json({
+      combinedAvailability,
+      totalUsers: eventData.userAvailabilities.length,
+      participants: eventData.participants || []
+    });
+  } catch (error) {
+    console.error('Error calculating combined availability:', error);
+    res.status(500).json({ error: 'Error calculating combined availability' });
+  }
+});
+
 // Start the Express server
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {

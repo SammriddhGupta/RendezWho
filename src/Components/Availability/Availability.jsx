@@ -131,8 +131,17 @@ function Availability({ eventId, username }) {
       currentDate.setUTCDate(currentDate.getUTCDate() + 1);
     }
 
-    console.log("Dates Dictionary:", dateDict);
-    return dateDict;
+    // Add one day to all keys in the dateDict
+    const newDateDict = {};
+    for (let key in dateDict) {
+      const newDate = new Date(key);
+      newDate.setUTCDate(newDate.getUTCDate() + 1); // Add 1 day
+      const newDateString = newDate.toISOString().split("T")[0]; // Get the date in "YYYY-MM-DD" format
+      newDateDict[newDateString] = dateDict[key]; // Assign the intervals from the original dateDict
+    }
+
+    console.log("Updated Dates Dictionary:", newDateDict);
+    return newDateDict;
   }
 
   const { uniqueLink } = useParams();
@@ -150,14 +159,15 @@ function Availability({ eventId, username }) {
         const data = await response.json();
         setEventData(data);
         setTimeList(generateTimeList(data.startTime, data.endTime, 1));
-        // console.log(
-        //   getDaysBetween(
-        //     data.startDate,
-        //     data.endDate,
-        //     data.startTime,
-        //     data.endTime
-        //   )
-        // );
+        console.log(
+          "asdfasdfadsfasdfasdf",
+          getDaysBetween(
+            data.startDate,
+            data.endDate,
+            data.startTime,
+            data.endTime
+          )
+        );
         setSlots(
           getDaysBetween(
             data.startDate,
@@ -272,7 +282,7 @@ function Availability({ eventId, username }) {
     <div className="flex flex-col w-full">
       <div className="side">
         <div className="time-container">
-          {/* {eventData && JSON.stringify(x)} */}
+          {/* {eventData && JSON.stringify(slots)} */}
           {(timeList || []).map((time, index) => (
             <div key={index} className="time-item">
               {time}
@@ -282,18 +292,20 @@ function Availability({ eventId, username }) {
         <div className="grid-container">
           <div className="avail-container">
             {/* Dynamically create a row for each date */}
-            {Object.keys(slots).map((date) => (
-              <div key={date} className="column-container">
-                {/* Display formatted date */}
-                <div className="text">{getFormattedDates(date)}</div>
+            {Object.keys(slots)
+              .sort((a, b) => new Date(a) - new Date(b))
+              .map((date) => (
+                <div key={date} className="column-container">
+                  {/* Display formatted date */}
+                  <div className="text">{getFormattedDates(date)}</div>
 
-                <Day
-                  hours={slots[date]} // Pass the specific day's slots
-                  date={date} // Pass the date
-                  toggleSlot={toggleSlot} // Pass the toggle function to change the state in the parent
-                />
-              </div>
-            ))}
+                  <Day
+                    hours={slots[date]} // Pass the specific day's slots
+                    date={date} // Pass the date
+                    toggleSlot={toggleSlot} // Pass the toggle function to change the state in the parent
+                  />
+                </div>
+              ))}
           </div>
         </div>
       </div>

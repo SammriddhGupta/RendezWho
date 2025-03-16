@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Day from "./Day"; // Assuming Day is the child component
 import "./Availability.css";
-function Availability() {
+
+function Availability({ eventId, username }) {
+  const [slots, setSlots] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [savingStatus, setSavingStatus] = useState("");
+
   function generateTimeList(startTime, endTime, interval = 1) {
     const times = [];
 
@@ -45,7 +50,6 @@ function Availability() {
 
   function getFormattedDates(startDate) {
     const startFormatted = formatDate(startDate);
-
     return startFormatted;
   }
 
@@ -81,54 +85,131 @@ function Availability() {
     return Math.floor(diffMinutes / 30);
   }
 
-  const [slots, setSlots] = useState({
-    "2025-04-01T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-    "2025-04-02T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-    "2025-04-03T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-    "2025-04-04T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-    "2025-04-05T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-    "2025-04-06T00:00:00.000Z": Array(
-      getHalfHourIntervals("9:00", "19:00")
-    ).fill(false),
-  });
+  useEffect(() => {
+    const fetchUserAvailability = async () => {
+      if (!eventId || !username) return;
+      
+      try {
+        const response = await fetch(`http://localhost:5001/api/events/${eventId}/availability/${username}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.availability) {
+            setSlots(data.availability);
+          } else {
+            // Initialize with default empty slots if no data exists
+            initializeDefaultSlots();
+          }
+        } else {
+          // If user doesn't have saved data yet, initialize default slots
+          initializeDefaultSlots();
+        }
+      } catch (error) {
+        console.error("Error fetching user availability:", error);
+        initializeDefaultSlots();
+      }
+    };
+
+    const initializeDefaultSlots = () => {
+      // Initialize with some default dates - in a real app, you'd get these from the event data
+      setSlots({
+        "2025-04-01T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
+        "2025-04-02T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
+        "2025-04-03T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
+        "2025-04-04T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
+        "2025-04-05T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
+        "2025-04-06T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
+      });
+    };
+
+    fetchUserAvailability();
+  }, [eventId, username]);
+
+  const saveAvailability = async () => {
+    if (!eventId || !username) {
+      setSavingStatus("Missing event ID or username");
+      return;
+    }
+
+    setLoading(true);
+    setSavingStatus("Saving...");
+
+    try {
+      const response = await fetch(`http://localhost:5001/api/events/${eventId}/availability`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          availability: slots,
+        }),
+      });
+
+      if (response.ok) {
+        setSavingStatus("Your availability has been saved!");
+        setTimeout(() => setSavingStatus(""), 3000); // Clear message after 3 seconds
+      } else {
+        setSavingStatus("Failed to save. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error saving availability:", error);
+      setSavingStatus("Error connecting to server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="side">
-      <div className="time-container">
-        {timeList.map((time, index) => (
-          <div key={index} className="time-item">
-            {time}
-          </div>
-        ))}
-      </div>
-      {/* {console.log(slots)} */}
-      <div className="avail-container">
-        {/* Dynamically create a row for each date */}
-        {Object.keys(slots).map((date) => (
-          <div key={date} className="column-container">
-            {/* Display formatted date */}
-            <div className="text">{getFormattedDates(date)}</div>
+    <div className="flex flex-col w-full">
+      <div className="side">
+        <div className="time-container">
+          {timeList.map((time, index) => (
+            <div key={index} className="time-item">
+              {time}
+            </div>
+          ))}
+        </div>
+        <div className="avail-container">
+          {/* Dynamically create a row for each date */}
+          {Object.keys(slots).map((date) => (
+            <div key={date} className="column-container">
+              {/* Display formatted date */}
+              <div className="text">{getFormattedDates(date)}</div>
 
-            <Day
-              hours={slots[date]} // Pass the specific day's slots
-              date={date} // Pass the date
-              toggleSlot={toggleSlot} // Pass the toggle function to change the state in the parent
-            />
-          </div>
-        ))}
+              <Day
+                hours={slots[date]} // Pass the specific day's slots
+                date={date} // Pass the date
+                toggleSlot={toggleSlot} // Pass the toggle function to change the state in the parent
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Save button and status message */}
+      <div className="flex flex-col items-center mt-4 w-full">
+        <button
+          onClick={saveAvailability}
+          disabled={loading}
+          className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors w-full max-w-xs"
+        >
+          {loading ? "Saving..." : "Save My Free Times"}
+        </button>
+        
+        {savingStatus && (
+          <p className={`mt-2 text-sm ${savingStatus.includes("Error") || savingStatus.includes("Failed") 
+            ? "text-red-500" 
+            : savingStatus === "Saving..." 
+              ? "text-gray-500" 
+              : "text-green-500"}`}>
+            {savingStatus}
+          </p>
+        )}
       </div>
     </div>
   );
 }
+
 
 export default Availability;

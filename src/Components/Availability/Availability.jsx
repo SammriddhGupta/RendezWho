@@ -279,7 +279,7 @@ function Availability({ eventId, username }) {
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full items-center justify-center">
       <div className="side">
         <div className="time-container">
           {/* {eventData && JSON.stringify(slots)} */}

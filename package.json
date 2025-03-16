@@ -19,6 +19,7 @@
     "dayjs": "^1.11.13",
     "leaflet": "^1.9.4",
     "leaflet-geosearch": "^4.2.0",
+    "lucide-react": "^0.482.0",
     "postcss": "^8.5.3",
     "react": "^19.0.0",
     "react-day-picker": "^9.6.2",

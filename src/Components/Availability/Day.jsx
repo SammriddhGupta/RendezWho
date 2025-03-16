@@ -44,11 +44,13 @@ function Day({ hours, date, toggleSlot }) {
           className="day-child"
           style={{
             cursor: "pointer",
-            backgroundColor: hour ? "green" : "gray", // Toggle color based on slot value
+            backgroundColor: hour ? "#bc94f4" : "#F9F6D5", // Toggle color based on slot value
             color: "black",
             height: "20px",
             width: "70px",
-            fontSize: "9px",
+            fontSize: "12px",
+            font:"tilt neon",
+            padding: "3px",           
           }}
         >
           {/* <div>{hour ? "True" : "False"}</div> */}

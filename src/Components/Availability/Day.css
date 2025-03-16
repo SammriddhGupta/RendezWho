@@ -5,6 +5,8 @@
   border-radius: 10px;
   display: flex; /* Makes the parent a flex container */
   flex-direction: column;
+
+  
   /* justify-content: space-between; Distributes space evenly between items */
 }
 

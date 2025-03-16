@@ -144,10 +144,12 @@ function Event() {
             <div className="flex-col flex-3 items-center justify-center w-full md:w-2/3 gap-4">
               <Map
                 onLocationSelect={handleLocationSelect}
-                onOptionAdded={fetchEventData}
+                
+              />
+              <AddPollOption 
                 eventId={uniqueLink}
                 selectedLocation={selectedLocation}
-                eventData={eventData}
+                onOptionAdded={fetchEventData} // Refresh poll options after adding
               />
               <VotingBar
                 options={eventData?.pollOptions || []}

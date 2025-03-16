@@ -45,6 +45,14 @@ That attention to detail is key, prioritising work is essential, and that we're 
 
 All in all, we do think this is a very useful app and will make a lot of people's life easier. So far, there's no app or web that allows users to decide time and place all together, so we think the idea is very promising.
 
+### Demo Screenshots
+
+![Home](./src/assets/Home.png)
+
+![Event Page](./src/assets/Event-With-Times.png)
+![Poll](./src/assets/Poll.png)
+![Check](./src/assets/Check.png)
+![Confirm](./src/assets/Confirm.png)
 
 
 #### Requirements

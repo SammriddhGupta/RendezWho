@@ -2,6 +2,7 @@ import { useState } from "react";
 
 const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
   const [loading, setLoading] = useState(false);
+  const [poolAdded, setPoolAdded] = useState(false);
 
   const addOptionToPoll = async () => {
     if (!selectedLocation) {
@@ -10,6 +11,7 @@ const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
     }
 
     setLoading(true);
+
     try {
       const locationData = {
         display_name: selectedLocation.display_name,
@@ -35,11 +37,17 @@ const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
 
       const data = await response.json();
       console.log("Poll option added:", data);
-      alert("Location added to poll!");
+      if (!poolAdded) {
+        alert("Location added to poll!");
+      } else {
+        alert("Voted");
+      }
 
       if (onOptionAdded) {
         onOptionAdded(locationData);
       }
+
+      setPoolAdded(true);
     } catch (error) {
       console.error("Error adding poll option:", error);
       alert("Error adding poll option. Please try again.");
@@ -51,10 +59,10 @@ const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
   return (
     <button
       onClick={addOptionToPoll}
-      className="mt-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+      className="flex items-center justify-center mt-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
       disabled={loading}
     >
-      {loading ? "Adding..." : "Add to Poll"}
+      {(loading) ? "Adding" : (poolAdded) ? "Add vote" : "Add to poll"}
     </button>
   );
 };

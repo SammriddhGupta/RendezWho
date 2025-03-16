@@ -18,7 +18,6 @@ function Event() {
   const { uniqueLink } = useParams();
   const [eventData, setEventData] = useState(null);
 
-
   // const [pollOptions, setPollOptions] = useState([]);  
   const handleNameSubmit = () => {
     if (inputValue.trim() === "") return; // Prevent empty submissions
@@ -141,6 +140,7 @@ function Event() {
                 onOptionAdded={fetchEventData}
                 eventId={uniqueLink}
                 selectedLocation={selectedLocation}
+                eventData={eventData}
               />
               <VotingBar
                 options={eventData?.pollOptions || []}

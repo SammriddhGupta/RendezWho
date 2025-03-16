@@ -91,10 +91,10 @@ function Home() {
         <div className="mt-10 max-w-2xl text-center bg-white p-8 rounded-2xl">
           <div className="flex items-center justify-center gap-2">
             <img src={cheesecracker} alt="logo" className="w-12 h-12" />
-            <h1 className="text-5xl font-bold text-purple-600">RendezWho</h1>
+            <h1 className="text-5xl font-bold text-purple-600">SpotSync</h1>
           </div>
           <p className="text-gray-500 mt-1 text-sm">
-            Who, When, Where, all in once
+            From plans to places in seconds 
           </p>
           <div className="mt-10 flex flex-col gap-4">
             <div className="flex flex-col items-start">
@@ -216,8 +216,8 @@ function Home() {
             )}
           </div>
           <div className="mt-6">
-            <p className="text-gray-300">
-              Created by cheesecracker (we are def not dying)
+            <p className="text-purple-900">
+              Team CheeseHackers
             </p>
           </div>
         </div>

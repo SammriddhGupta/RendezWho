@@ -81,8 +81,8 @@ function CombinedAvailability({ eventId }) {
   // If there was an error
   if (error) {
     return (
-      <div className="p-4 text-red-500">
-        Error: {error}. Make sure participants have added their availability.
+      <div className="p-4 text-blue-500">
+        Oops: {"No one has input their availabilties yet"}.
       </div>
     );
   }

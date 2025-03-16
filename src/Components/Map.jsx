@@ -5,7 +5,7 @@ import L from "leaflet";
 import SearchBar from "./SearchBar";
 import AddPollOption from "./AddPollOption";
 
-const MapComponent = ({ onLocationSelect, onOptionAdded, eventId, }) => {
+const MapComponent = ({ onLocationSelect, onOptionAdded, eventId }) => {
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupLocation, setPopupLocation] = useState(null);
@@ -17,8 +17,6 @@ const MapComponent = ({ onLocationSelect, onOptionAdded, eventId, }) => {
   });
 
   const searchEventHandler = (result) => {
-    console.log("Search result:", result);
-
     const locationData = {
       display_name: result.label,
       name: result.raw.name || "Selected Location",
@@ -28,7 +26,20 @@ const MapComponent = ({ onLocationSelect, onOptionAdded, eventId, }) => {
     };
 
     console.log("Selected location:", locationData);
-    setSelectedLocations((prevLocations) => [...prevLocations, locationData]); // Add new marker
+    // Before setting, check if the locationData existed
+    const updatedLocations = selectedLocations;
+    const isDataExists = false;
+    selectedLocations.forEach(data => {
+      if ((data.display_name == locationData.display_name) || (data.x == locationData.x && data.y == locationData.y)) {
+        isDataExists(true);
+      }
+    });
+
+    if (!isDataExists) {
+      updatedLocations.push(locationData);
+      setSelectedLocations(updatedLocations);
+    }
+
     setPopupLocation(locationData);
     setPopupOpen(true); 
 
@@ -36,6 +47,9 @@ const MapComponent = ({ onLocationSelect, onOptionAdded, eventId, }) => {
       onLocationSelect(locationData);
     }
   };
+
+  useEffect(() => {
+  }, [selectedLocations]);
 
   return (
     <MapContainer

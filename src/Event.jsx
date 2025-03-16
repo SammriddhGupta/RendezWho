@@ -10,7 +10,8 @@ import NameBox from "./Components/NameBox.jsx";
 function Event() {
   const [names, setNames] = useState(["Alice", "Bob", "Charlie"]);
   const [inputValue, setInputValue] = useState("");
-  const [nameCompleted, setNameCompleted] = useState(false);  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [nameCompleted, setNameCompleted] = useState(false);  
+  const [selectedLocation, setSelectedLocation] = useState(null);
   // const [pollOptions, setPollOptions] = useState([]);  
   const handleNameSubmit = () => {
     if (inputValue.trim() === "") return; // Prevent empty submissions

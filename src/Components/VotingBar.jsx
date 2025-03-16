@@ -3,9 +3,11 @@ import OptionButton from "./OptionButton";
 
 export default function VotingBar({ options = [], eventId }) {
   const [pollOptions, setPollOptions] = useState([]);
+  const [selectedVotes, setSelectedVotes] = useState({}); // Track selection state
+  const [readyToVote, setReadyToVote] = useState({}); // Controls when voting is allowed
 
   // Function to merge duplicate locations and sum votes
-  const mergeDuplicateLocations = (options) => {
+  const mergeAndSortLocations = (options) => {
     const mergedOptions = {};
 
     options.forEach((option) => {
@@ -17,12 +19,29 @@ export default function VotingBar({ options = [], eventId }) {
       }
     });
 
-    return Object.values(mergedOptions);
+    return Object.values(mergedOptions).sort((a, b) => b.votes - a.votes);
   };
 
   useEffect(() => {
-    setPollOptions(mergeDuplicateLocations(options));
+    setPollOptions(mergeAndSortLocations(options));
   }, [options]);
+
+  const updateAndSortVotes = (updatedOptions) => {
+    const sortedOptions = [...updatedOptions].sort((a, b) => b.votes - a.votes);
+    setPollOptions(sortedOptions);
+  };
+
+  const handleVoteToggle = (name) => {
+    // If ready to vote, process the vote
+    if (readyToVote[name]) {
+      handleVote(name);
+      setReadyToVote((prev) => ({ ...prev, [name]: false })); // Reset after voting
+    } else {
+      // Otherwise, just reset the color without voting
+      setSelectedVotes((prev) => ({ ...prev, [name]: false }));
+      setReadyToVote((prev) => ({ ...prev, [name]: true })); // Allow voting on next click
+    }
+  };
 
   const handleVote = async (name) => {
     const updatedOptions = pollOptions.map((option) =>
@@ -31,13 +50,14 @@ export default function VotingBar({ options = [], eventId }) {
         : option
     );
 
-    setPollOptions(updatedOptions);
+    setSelectedVotes((prev) => ({ ...prev, [name]: true })); // Mark as selected
+    updateAndSortVotes(updatedOptions);
 
     try {
       await fetch(`http://localhost:5001/api/events/${eventId}/vote`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ locationName: name }), // Send name instead of index
+        body: JSON.stringify({ locationName: name }),
       });
     } catch (error) {
       console.error("Error voting:", error);
@@ -51,18 +71,24 @@ export default function VotingBar({ options = [], eventId }) {
       </h3>
       <div className="flex flex-col items-center justify-center gap-3 w-[80%] p-1">
         {pollOptions.length > 0 ? (
-          pollOptions.map((option, index) => (
-            <OptionButton
-              key={index}
-              option={option.name}
-              votes={option.votes || 1}
-              onVote={() => handleVote(option.name)}
-            />
-          ))
+          pollOptions.map((option, index) => {
+            const isTopVoted = index === 0; // First item in sorted list
+            const isSelected = selectedVotes[option.name] || false; // Check if selected
+
+            return (
+              <OptionButton
+                key={index}
+                option={(isTopVoted ? " ⭐ " : "") + option.name} // Add star emoji if highest vote
+                votes={option.votes || 0}
+                isSelected={isSelected} // Pass selection state to button
+                onVote={() => handleVoteToggle(option.name)} // Click toggles first, then votes
+              />
+            );
+          })
         ) : (
           <p className="text-gray-500">
-            No locations added yet. 
-            Search for a location on the map and add it to the poll.
+            No locations added yet. Search for a location on the map and add it
+            to the poll.
           </p>
         )}
       </div>

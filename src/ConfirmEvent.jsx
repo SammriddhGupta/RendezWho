@@ -6,11 +6,12 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { Select, TextField, MenuItem, FormControl, InputLabel, Avatar, Box } from "@mui/material";
 import dayjs from "dayjs";
+import { v4 as uuidv4 } from "uuid";
 
 function ConfirmEvent() {
   const navigate = useNavigate(); // Initialize the navigate function
-  const [selectedStartTime, setSelectedStartTime] = useState(dayjs("2023-01-01T10:30"));
-  const [selectedEndTime, setSelectedEndTime] = useState(dayjs("2023-01-01T20:30"));
+  const [selectedStartTime, setSelectedStartTime] = useState(dayjs("2025-05-01T10:30"));
+  const [selectedEndTime, setSelectedEndTime] = useState(dayjs("2025-05-01T20:30"));
   const [eventName] = useState("Event Name");
   const [date] = useState("Saturday, Apr 14, 2025");
   const places = ["UNSW", "USYD", "UTS"];
@@ -27,19 +28,25 @@ function ConfirmEvent() {
   }
 
   const handleExport = () => {
-    const eventStart = selectedStartTime.format("YYYYMMDDTHHmmss");
-    const eventEnd = selectedEndTime.format("YYYYMMDDTHHmmss");
+    const eventStart = selectedStartTime.format("YYYYMMDDTHHmmss[Z]");
+    const eventEnd = selectedEndTime.format("YYYYMMDDTHHmmss[Z]");
+    const uid = uuidv4(); // Generate a unique ID
+    const dtstamp = dayjs().format("YYYYMMDDTHHmmss[Z]"); // Current timestamp
 
     const icsContent = `BEGIN:VCALENDAR
-    VERSION:2.0
-    BEGIN:VEVENT
-    SUMMARY:${eventName}
-    DESCRIPTION:${name}
-    DTSTART:${eventStart}
-    DTEND:${eventEnd}
-    LOCATION:Zoom Meeting
-    END:VEVENT
-    END:VCALENDAR`;
+VERSION:2.0
+PRODID:-//Your Organization//NONSGML v1.0//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:${uid}
+DTSTAMP:${dtstamp}
+SUMMARY:${eventName}
+DESCRIPTION:${Array.isArray(name) ? name.join(", ") : name || "No description provided"}
+DTSTART:${eventStart}
+DTEND:${eventEnd}
+LOCATION:${selectedPlace}
+END:VEVENT
+END:VCALENDAR`;
 
     // Create a Blob with the iCal content
     const blob = new Blob([icsContent], { type: "text/calendar" });

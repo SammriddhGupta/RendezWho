@@ -5,11 +5,10 @@ import L from "leaflet";
 import SearchBar from "./SearchBar";
 import AddPollOption from "./AddPollOption";
 
-const MapComponent = ({ onLocationSelect, onOptionAdded, eventId }) => {
+const MapComponent = ({ onLocationSelect, onOptionAdded, eventId, }) => {
   const [selectedLocations, setSelectedLocations] = useState([]);
-  const [markerPosition, setMarkerPosition] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
-
+  const [popupLocation, setPopupLocation] = useState(null);
   const markerIcon = new L.Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
     iconSize: [32, 32],
@@ -30,9 +29,8 @@ const MapComponent = ({ onLocationSelect, onOptionAdded, eventId }) => {
 
     console.log("Selected location:", locationData);
     setSelectedLocations((prevLocations) => [...prevLocations, locationData]); // Add new marker
-    setPopupOpen(locationData);
-    setMarkerPosition([result.y, result.x]);
-     // Open popup automatically
+    setPopupLocation(locationData);
+    setPopupOpen(true); 
 
     if (onLocationSelect) {
       onLocationSelect(locationData);
@@ -61,15 +59,24 @@ const MapComponent = ({ onLocationSelect, onOptionAdded, eventId }) => {
       />
 
       {/* Marker appears automatically when location is selected */}
-      {selectedLocations.map((location, index)=> (
-        <Marker key={index} position={[location.y, location.x]} icon={markerIcon}>
-          <AutoPopup open={popupOpen} setOpen={setPopupOpen}>
+      {selectedLocations.map((location, index) => (
+        <Marker
+          key={index}
+          position={[location.y, location.x]}
+          icon={markerIcon}
+        >
+          <AutoPopup open={popupLocation} setOpen={setPopupLocation}>
             <h3 className="font-bold text-center">{location.name}</h3>
-            <AddPollOption
-              eventId={eventId}
-              selectedLocation={location}
-              onOptionAdded={onOptionAdded}
-            />
+            {popupOpen ? (
+              <AddPollOption
+                eventId={eventId}
+                selectedLocation={location}
+                onOptionAdded={onOptionAdded}
+                onClick={setPopupOpen(false)}
+              />
+            ) : (
+              <p>Location in poll</p>
+            )}
           </AutoPopup>
         </Marker>
       ))}

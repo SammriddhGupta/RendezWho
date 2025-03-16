@@ -8,7 +8,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { TextField } from "@mui/material";
 import { Box, Button } from "@mui/material";
-
+import cheesecracker from './assets/cheesecracker.png';
 function Home() {
   const [eventName, setEventName] = useState("");
   const [selectedRange, setSelectedRange] = useState(null);
@@ -84,11 +84,13 @@ function Home() {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className="min-h-screen flex flex-col items-center bg-gray-100 p-6">
         <div className="mt-10 max-w-2xl text-center bg-white p-8 rounded-2xl">
+          <div className="flex items-center justify-center gap-2">
+          <img src={cheesecracker} alt="logo" className="w-12 h-12"/>
           <h1 className="text-5xl font-bold text-purple-600">RendezWho</h1>
+          </div>
           <p className="text-gray-500 mt-1 text-sm">
             Who, When, Where, all in once
           </p>
-
           <div className="mt-10 flex flex-col gap-4">
             <div className="flex flex-col items-start">
               {/* <p>Event name</p> */}
@@ -157,7 +159,7 @@ function Home() {
                           backgroundColor: clickedStates[index]
                             ? "#4C288F"
                             : "#F3EFFF",
-                          
+
                           borderColor: "#4C288F",
                           boxShadow: 0,
                         },
@@ -208,7 +210,6 @@ function Home() {
               </p>
             )}
           </div>
-
           <div className="mt-6">
             <p className="text-gray-300">
               Created by cheesecracker (we are def not dying)

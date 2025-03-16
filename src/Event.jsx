@@ -8,7 +8,7 @@ import AddPollOption from "./Components/AddPollOption.jsx";
 import NameBox from "./Components/NameBox.jsx";
 
 function Event() {
-  const [names, setNames] = useState(["Alice", "Bob", "Charlie"]);
+  const [names, setNames] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [nameCompleted, setNameCompleted] = useState(false);
   const [currentUser, setCurrentUser] = useState("");

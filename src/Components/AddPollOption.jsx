@@ -59,7 +59,7 @@ const AddPollOption = ({ eventId, selectedLocation, onOptionAdded }) => {
   return (
     <button
       onClick={addOptionToPoll}
-      className="flex items-center justify-center mt-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+      className="mx-auto flex items-center justify-center mt-2 mb-6 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
       disabled={loading}
     >
       {(loading) ? "Adding" : (poolAdded) ? "Add vote" : "Add to poll"}

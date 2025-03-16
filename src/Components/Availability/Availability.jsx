@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Day from "./Day"; // Assuming Day is the child component
 import "./Availability.css";
+import { useParams } from "react-router-dom";
 
 function Availability({ eventId, username }) {
   const [slots, setSlots] = useState({});
   const [loading, setLoading] = useState(false);
   const [savingStatus, setSavingStatus] = useState("");
+  const [eventData, setEventData] = useState(null);
 
   function generateTimeList(startTime, endTime, interval = 1) {
     const times = [];
@@ -65,7 +67,8 @@ function Availability({ eventId, username }) {
     }));
   };
 
-  const timeList = generateTimeList("09:00", "17:00", 1);
+  // const timeList = generateTimeList("09:00", "17:00", 1);
+  const [timeList, setTimeList] = useState(null);
 
   function getHalfHourIntervals(startTime, endTime) {
     // Helper function to convert time in HH:MM format to minutes
@@ -84,43 +87,145 @@ function Availability({ eventId, username }) {
     // Return the number of half-hour intervals
     return Math.floor(diffMinutes / 30);
   }
+  function getDaysBetween(startISO, endISO, startTime, endTime) {
+    function convertToISOString(timestamp) {
+      // Convert seconds to milliseconds
+      const milliseconds =
+        timestamp.seconds * 1000 + Math.floor(timestamp.nanoseconds / 1000000);
+
+      // Create a new Date object using the milliseconds
+      const date = new Date(milliseconds);
+
+      // Convert to ISO string
+      return date.toISOString();
+    }
+
+    // Parse the ISO strings into Date objects (ensure they're in UTC)
+    const startDate = new Date(convertToISOString(startISO));
+    const endDate = new Date(convertToISOString(endISO));
+
+    const dateDict = {}; // Dictionary to store each day
+
+    // Ensure the startDate and endDate are in UTC with no time components affecting it
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    let currentDate = new Date(startDate);
+    let lastDate = new Date(endDate);
+
+    console.log("Start Date:", startDate.toISOString());
+    console.log("End Date:", endDate.toISOString());
+
+    // Ensure the loop runs while the current date is on or before the end date
+    while (currentDate <= lastDate) {
+      // Format the date as 'YYYY-MM-DD'
+      const dateString = currentDate.toISOString().split("T")[0]; // e.g., "2025-03-16"
+      console.log("Current Date:", currentDate.toISOString());
+
+      // Add the formatted date to the dictionary with the appropriate intervals
+      dateDict[dateString] = Array(
+        getHalfHourIntervals(startTime, endTime)
+      ).fill(false);
+
+      // Move to the next day in UTC to avoid time zone issues
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+    }
+
+    console.log("Dates Dictionary:", dateDict);
+    return dateDict;
+  }
+
+  const { uniqueLink } = useParams();
+  // const [x, setX] = useState(null);
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/events/${uniqueLink}`
+        );
+        if (!response.ok) {
+          throw new Error("Event not found");
+        }
+        const data = await response.json();
+        setEventData(data);
+        setTimeList(generateTimeList(data.startTime, data.endTime, 1));
+        // console.log(
+        //   getDaysBetween(
+        //     data.startDate,
+        //     data.endDate,
+        //     data.startTime,
+        //     data.endTime
+        //   )
+        // );
+        setSlots(
+          getDaysBetween(
+            data.startDate,
+            data.endDate,
+            data.startTime,
+            data.endTime
+          )
+        );
+        console.log(`Data for the ${data.name} event is`, data);
+      } catch (error) {
+        console.error("Error fetching event:", error);
+      }
+    };
+    fetchEvent();
+  }, [uniqueLink]);
 
   useEffect(() => {
     const fetchUserAvailability = async () => {
       if (!eventId || !username) return;
-      
+
       try {
-        const response = await fetch(`http://localhost:5001/api/events/${eventId}/availability/${username}`);
-        
+        const response = await fetch(
+          `http://localhost:5001/api/events/${eventId}/availability/${username}`
+        );
+
         if (response.ok) {
           const data = await response.json();
+
           if (data.availability) {
             setSlots(data.availability);
           } else {
             // Initialize with default empty slots if no data exists
-            initializeDefaultSlots();
+            // initializeDefaultSlots();
           }
         } else {
           // If user doesn't have saved data yet, initialize default slots
-          initializeDefaultSlots();
+          // initializeDefaultSlots();
         }
       } catch (error) {
         console.error("Error fetching user availability:", error);
-        initializeDefaultSlots();
+        // initializeDefaultSlots();
       }
     };
 
-    const initializeDefaultSlots = () => {
-      // Initialize with some default dates - in a real app, you'd get these from the event data
-      setSlots({
-        "2025-04-01T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
-        "2025-04-02T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
-        "2025-04-03T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
-        "2025-04-04T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
-        "2025-04-05T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
-        "2025-04-06T00:00:00.000Z": Array(getHalfHourIntervals("9:00", "19:00")).fill(false),
-      });
-    };
+    // const initializeDefaultSlots = () => {
+    //   // Initialize with some default dates - in a real app, you'd get these from the event data
+    //   console.log(x);
+    //   setSlots({
+    //     "2025-04-01T00:00:00.000Z": Array(
+    //       getHalfHourIntervals("9:00", "19:00")
+    //     ).fill(false),
+    //     "2025-04-02T00:00:00.000Z": Array(
+    //       getHalfHourIntervals("9:00", "19:00")
+    //     ).fill(false),
+    //     "2025-04-03T00:00:00.000Z": Array(
+    //       getHalfHourIntervals("9:00", "19:00")
+    //     ).fill(false),
+    //     "2025-04-04T00:00:00.000Z": Array(
+    //       getHalfHourIntervals("9:00", "19:00")
+    //     ).fill(false),
+    //     "2025-04-05T00:00:00.000Z": Array(
+    //       getHalfHourIntervals("9:00", "19:00")
+    //     ).fill(false),
+    //     "2025-04-06T00:00:00.000Z": Array(
+    //       getHalfHourIntervals("9:00", "19:00")
+    //     ).fill(false),
+    //   });
+    // };
 
     fetchUserAvailability();
   }, [eventId, username]);
@@ -135,16 +240,19 @@ function Availability({ eventId, username }) {
     setSavingStatus("Saving...");
 
     try {
-      const response = await fetch(`http://localhost:5001/api/events/${eventId}/availability`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          availability: slots,
-        }),
-      });
+      const response = await fetch(
+        `http://localhost:5001/api/events/${eventId}/availability`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            availability: slots,
+          }),
+        }
+      );
 
       if (response.ok) {
         setSavingStatus("Your availability has been saved!");
@@ -164,26 +272,29 @@ function Availability({ eventId, username }) {
     <div className="flex flex-col w-full">
       <div className="side">
         <div className="time-container">
-          {timeList.map((time, index) => (
+          {/* {eventData && JSON.stringify(x)} */}
+          {(timeList || []).map((time, index) => (
             <div key={index} className="time-item">
               {time}
             </div>
           ))}
         </div>
-        <div className="avail-container">
-          {/* Dynamically create a row for each date */}
-          {Object.keys(slots).map((date) => (
-            <div key={date} className="column-container">
-              {/* Display formatted date */}
-              <div className="text">{getFormattedDates(date)}</div>
+        <div className="grid-container">
+          <div className="avail-container">
+            {/* Dynamically create a row for each date */}
+            {Object.keys(slots).map((date) => (
+              <div key={date} className="column-container">
+                {/* Display formatted date */}
+                <div className="text">{getFormattedDates(date)}</div>
 
-              <Day
-                hours={slots[date]} // Pass the specific day's slots
-                date={date} // Pass the date
-                toggleSlot={toggleSlot} // Pass the toggle function to change the state in the parent
-              />
-            </div>
-          ))}
+                <Day
+                  hours={slots[date]} // Pass the specific day's slots
+                  date={date} // Pass the date
+                  toggleSlot={toggleSlot} // Pass the toggle function to change the state in the parent
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -196,13 +307,17 @@ function Availability({ eventId, username }) {
         >
           {loading ? "Saving..." : "Save My Free Times"}
         </button>
-        
+
         {savingStatus && (
-          <p className={`mt-2 text-sm ${savingStatus.includes("Error") || savingStatus.includes("Failed") 
-            ? "text-red-500" 
-            : savingStatus === "Saving..." 
-              ? "text-gray-500" 
-              : "text-green-500"}`}>
+          <p
+            className={`mt-2 text-sm ${
+              savingStatus.includes("Error") || savingStatus.includes("Failed")
+                ? "text-red-500"
+                : savingStatus === "Saving..."
+                ? "text-gray-500"
+                : "text-green-500"
+            }`}
+          >
             {savingStatus}
           </p>
         )}
@@ -210,6 +325,5 @@ function Availability({ eventId, username }) {
     </div>
   );
 }
-
 
 export default Availability;
